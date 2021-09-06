@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Groupomania</title>
+    <link rel="stylesheet" href="./public/style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <section id="connection">
+        <img src="./public/logo/icon-above-font-small.png" class="login-logo" alt="Logo de Groupomania" />
+        <form action="login" method="get" class="login-form">
+            <div class="login-input">
+                <label for="email">
+                    Entrez votre email :
+                </label>
+                <input type="email" name="email" id="email" class="input-champ" placeholder="ex : martin-petit@gmail.com" required>
+            </div>
+            <div class="login-input">
+                <label for="password">
+                    Entrez votre mot de passe :
+                </label>
+                <input type="text" name="password" id="password" class="input-champ" placeholder="ex : mot-de-passe" required>
+              </div>
+            <div class="login-button">
+              <input type="submit" value="Connexion" class="form-button shadow">
+            </div>
+          </form>
+    </section>
+</body>
+</html>
