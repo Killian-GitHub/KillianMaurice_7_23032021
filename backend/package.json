@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Groupomania backend files",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Killian-GitHub/KillianMaurice_7_23032021.git"
+  },
+  "author": "Killian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Killian-GitHub/KillianMaurice_7_23032021/issues"
+  },
+  "homepage": "https://github.com/Killian-GitHub/KillianMaurice_7_23032021#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "helmet": "^4.6.0"
+  }
+}
