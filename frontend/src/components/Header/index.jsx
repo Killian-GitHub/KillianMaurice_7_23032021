@@ -20,6 +20,7 @@ const HeaderLi = styled.li`
   margin-left: 35px;
 `
 const HeaderLink = styled.div`
+  margin-right: 10px;
   color: rgb(139, 139, 139);
   text-decoration: none;
   &:hover {
