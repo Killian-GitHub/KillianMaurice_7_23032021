@@ -1,29 +1,18 @@
+// Imports >
 const express = require('express')
 const helmet = require('helmet')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const path = require('path')
+const apiRouter = require('./routes/route').router
 
-const userRoutes = require('./routes/users')
-const postsRoutes = require('./routes/posts')
-
+// App express
 const app = express()
 
+// Plugin
+app.use(bodyParser.urlencoded({ extended: true })) // parse des objets inclus dans d'autres
 app.use(bodyParser.json())
 app.use(helmet())
-app.use(cors())
-
-const { sequelize } = require('./config/sequelize')
-
-const dbTest = async function () {
-  try {
-    await sequelize.authenticate()
-    console.log('Connection has been established successfully.')
-  } catch (error) {
-    console.error('Unable to connect to the database:', error)
-  }
-}
-dbTest()
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -38,8 +27,8 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/upload', express.static(path.join(__dirname, 'upload')))
-app.use('/api/users', userRoutes)
-app.use('/api/posts', postsRoutes)
+// Router
+app.use('/images', express.static(path.join(__dirname, 'images')))
+app.use('/api/', apiRouter)
 
 module.exports = app
