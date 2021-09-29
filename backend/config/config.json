@@ -1,0 +1,25 @@
+{
+  "development": {
+    "username": "groupomaniaDbUser",
+    "password": "GrpU2021",
+    "database": "groupomania",
+    "host": "localhost",
+    "port": "3306",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "groupomaniaDbUser",
+    "password": "GrpU2021",
+    "database": "groupomania_test",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "groupomaniaDbUser",
+    "password": "GrpU2021",
+    "database": "groupomania",
+    "host": "localhost",
+    "port": "3306",
+    "dialect": "mysql"
+  }
+}
