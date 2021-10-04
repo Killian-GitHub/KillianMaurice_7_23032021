@@ -1,57 +1,149 @@
+import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
+import axios from 'axios'
+
 import '../../styles/login.css'
 import ConnectionLogo from '../../assets/logo/icon-above-font-small.png'
 
 function Signup() {
+  // Initialisation du state
+  const [state, setState] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  })
+
+  // History
+  let history = useHistory()
+
+  // Récupération des valeurs
+  const handleChange = (e) => {
+    const { id, value } = e.target
+    setState((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }))
+  }
+
+  // Initialisation de bouton
+  const submitClick = (e) => {
+    e.preventDefault()
+    const formValues = {
+      firstName: state.firstName,
+      lastName: state.lastName,
+      email: state.email,
+      password: state.password,
+    }
+    axios({
+      method: 'post',
+      url: 'http://localhost:3000/api/users/signup',
+      data: formValues,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        console.log(res)
+        if (res.status === 201) {
+          setState((prevState) => ({
+            ...prevState,
+          }))
+          window.alert(
+            'Votre compte a bien été créé, a présent veuillez vous connecter'
+          )
+          history.push('/login')
+        } else {
+          window.alert('Une erreur est survenue')
+          console.log(res)
+        }
+      })
+      .catch((err) => {
+        alert("Veuillez bien remplir le formulaire d'inscription")
+        console.log(err)
+      })
+  }
+  // Injection du composant
   return (
-    <div className="connection">
-      <img
-        src={ConnectionLogo}
-        className="login-logo"
-        alt="Logo de Groupomania"
-      />
-      <form action="sign-up" method="post" className="login-form">
-        <div class="login-input">
-          <label for="name">Entrez votre prénom :</label>
+    <section className="container mb-5">
+      <div className="text-center">
+        <img
+          src={ConnectionLogo}
+          className="login-logo mb-3 col-9 col-md-8 col-lg-5"
+          alt="Logo de Groupomania"
+        />
+      </div>
+      <div className="row">
+        <div className="mb-3 col-11 col-md-9 col-lg-6 text-center mx-auto">
+          <label htmlFor="firstName" className="signup-form mb-1">
+            Entrez votre prénom :
+          </label>
           <input
             type="text"
-            name="name"
-            id="name"
-            class="input-champ"
-            placeholder="ex : martin"
-            required
+            className="form-control bg-light text-center"
+            id="firstName"
+            placeholder="ex : Martin"
+            value={state.firstName}
+            onChange={handleChange}
           />
         </div>
-        <div class="login-input">
-          <label for="email">Entrez votre email :</label>
+      </div>
+      <div className="row ">
+        <div className="mb-3 col-11 col-md-9 col-lg-6 text-center mx-auto">
+          <label htmlFor="lastName" className="signup-form mb-1">
+            Entrez votre nom :
+          </label>
           <input
-            type="email"
-            name="email"
+            type="text"
+            className="form-control bg-light text-center"
+            id="lastName"
+            placeholder="ex : Petit"
+            value={state.lastName}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="mb-3 col-11 col-md-9 col-lg-6 text-center mx-auto">
+          <label htmlFor="email" className="login-form mb-1">
+            Entrez votre email :
+          </label>
+          <input
+            type="text"
+            className="form-control bg-light text-center"
             id="email"
-            class="input-champ"
-            placeholder="ex : martin-petit@gmail.com"
-            required
+            placeholder="ex : martin-petit@gmail.com.com"
+            value={state.email}
+            onChange={handleChange}
           />
         </div>
-        <div class="login-input">
-          <label for="password">Entrez votre mot de passe :</label>
+      </div>
+      <div className="row">
+        <div className="mb-3 col-11 col-md-9 col-lg-6 text-center mx-auto">
+          <label htmlFor="password" className="login-form mb-1">
+            Saisissez un mot de passe :
+          </label>
           <input
-            type="text"
-            name="password"
+            type="password"
+            className="form-control bg-light text-center"
             id="password"
-            class="input-champ"
-            placeholder="ex : mot-de-passe"
-            required
+            placeholder="ex : Votremotdepasse"
+            value={state.password}
+            onChange={handleChange}
           />
         </div>
-        <div class="login-button">
-          <input
-            type="submit"
-            value="Inscription"
-            className="form-button shadow"
-          />
-        </div>
-      </form>
-    </div>
+      </div>
+      <div className="row">
+        <button
+          type="button"
+          id="signupButton"
+          className="btn btn-success col-5 col-md-4 col-lg-3 mt-4 mx-auto"
+          onClick={submitClick}
+        >
+          Inscription
+        </button>
+      </div>
+    </section>
   )
 }
 
