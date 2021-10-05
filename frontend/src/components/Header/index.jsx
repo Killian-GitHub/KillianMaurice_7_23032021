@@ -1,56 +1,69 @@
 import styled from 'styled-components'
-
+import { useHistory } from 'react-router-dom'
 import HeaderLogo from '../../assets/logo/icon-left-font-small.png'
 
-// --- style --- //
-const HeaderContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding-right: 5px;
-`
 const Logo = styled.img`
-  width: 200px;
+  width: 10%;
 `
-const HeaderUl = styled.ul`
-  list-style: none;
-  display: flex;
-  margin: 35px auto;
-`
-const HeaderLi = styled.li`
-  margin-left: 35px;
-`
-const HeaderLink = styled.div`
-  margin-right: 10px;
-  color: rgb(139, 139, 139);
-  text-decoration: none;
+
+const NavLink = styled.div`
   &:hover {
-    color: black;
     cursor: pointer;
   }
 `
 
 // --- component --- //
 function Header() {
+  let history = useHistory()
   return (
-    <HeaderContainer>
-      <Logo src={HeaderLogo} alt="Logo de groupomania" />
-      <nav>
-        <HeaderUl>
-          <HeaderLink>
-            <HeaderLi>
-              <i className="fas fa-home header-icon"></i>
-              Accueil
-            </HeaderLi>
-          </HeaderLink>
-          <HeaderLink>
-            <HeaderLi>
-              <i className="fas fa-power-off header-icon"></i>
-              Déconnexion
-            </HeaderLi>
-          </HeaderLink>
-        </HeaderUl>
+    <header>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container-fluid">
+          <Logo
+            src={HeaderLogo}
+            alt="Logo de groupomania"
+            className="header-logo col-8"
+          />
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarTogglerDemo02"
+            aria-controls="navbarTogglerDemo02"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <NavLink
+                  className="nav-link"
+                  onClick={(e) => {
+                    history.push('/users/accounts/:id')
+                  }}
+                >
+                  Paramètres
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  className="nav-link"
+                  onClick={(e) => {
+                    window.localStorage.removeItem('token')
+                    window.localStorage.removeItem('id')
+                    history.push('/')
+                  }}
+                >
+                  Déconnexion
+                </NavLink>
+              </li>
+            </ul>
+          </div>
+        </div>
       </nav>
-    </HeaderContainer>
+    </header>
   )
 }
 

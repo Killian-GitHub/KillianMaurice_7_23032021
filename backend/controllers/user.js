@@ -4,7 +4,8 @@ const fs = require('fs')
 const emailValidator = require('email-validator')
 const passwordValidator = require('password-validator')
 const models = require('../models')
-const jwtUtils = require('../middleware/auth')
+// const jwtUtils = require('../utils/jwt')
+const jwt = require('jsonwebtoken')
 
 // Password schema config >
 const passwordSchema = new passwordValidator()
@@ -20,70 +21,82 @@ passwordSchema
   .lowercase()
 
 // SIGNUP //
-exports.signup = (req, res) => {
+exports.signup = async (req, res) => {
   try {
-    const user = models.User.findOne({
+    const user = await models.User.findOne({
       where: { email: req.body.email },
     })
     if (user !== null) {
-      if (user.email === req.body.email) {
-        return res.status(400).json({ error: 'Cet utilisateur existe déjà' })
-      }
+      return res.status(400).json({ error: 'Cet utilisateur existe déjà' })
     } else {
       if (emailValidator.validate(req.body.email)) {
         if (passwordSchema.validate(req.body.password)) {
-          const hash = bcrypt.hash(req.body.password, 10)
-          const newUser = models.User.create({
+          const hash = await bcrypt.hash(req.body.password, 10)
+          const newUser = await models.User.create({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
             password: hash,
-            admin: false,
           })
-          const tokenObject = jwtUtils.generateTokenForUser(newUser)
+          const userToken = jwt.sign(
+            { userId: newUser.id },
+            process.env.AUTH_TOKEN,
+            {
+              expiresIn: '2H',
+            }
+          )
           res.status(201).send({
             userId: newUser,
-            token: tokenObject,
-            message: 'Votre utilisateur à bien été enregistré',
+            userToken,
           })
+        } else {
+          return res.status(400).json({ error: 'Mot de passe invalide' })
         }
+      } else {
+        return res.status(400).json({ error: 'Adresse mail invalide' })
       }
     }
   } catch (error) {
-    return res.status(400).send({ error: 'Utilisateur introuvable' })
+    return res.status(400).send({ error: error })
   }
 }
 
 // LOGIN //
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   try {
-    const user = models.User.findOne({
+    const user = await models.User.findOne({
       where: { email: req.body.email },
     }) // Recherche de l'adresse email dans la DB
     if (!user) {
       return res.status(403).send({ error: 'La connexion à échouée' })
     } else {
-      const hash = bcrypt.compare(req.body.password, user.password) //Comparaison des mots de passe
+      const hash = await bcrypt.compare(req.body.password, user.password) //Comparaison des mots de passe
       if (!hash) {
         return res.status(401).send({ error: 'Mot de passe incorrect !' })
       } else {
-        const tokenObject = jwtUtils.generateTokenForUser(user)
+        const userToken = jwt.sign(
+          { userId: user.id },
+          process.env.AUTH_TOKEN,
+          {
+            expiresIn: '2H',
+          }
+        )
         res.status(200).send({
           // Récupération du token utilisateur
-          userId: user,
-          token: tokenObject.jwtUtils,
+          userId: user.id,
+          userToken,
         })
       }
     }
   } catch (error) {
-    return res.status(500).send({ error: 'Erreur serveur' })
+    return res.status(500).send({ error: error })
   }
 }
 
 // GET ACCOUNT //
-exports.getAccount = (req, res) => {
+exports.getAccount = async (req, res) => {
   try {
-    const user = models.User.findOne({
+    const user = await models.User.findOne({
       // Recherche de l'uilisateur
       where: { id: req.params.id },
     })
@@ -94,12 +107,12 @@ exports.getAccount = (req, res) => {
 }
 
 // UPDATE //
-exports.updateAccount = (req, res) => {
+exports.updateAccount = async (req, res) => {
   const id = req.params.id
   try {
     const userId = jwtUtils.getUserId(req)
     let newPhoto
-    let user = models.User.findOne({ where: { id: id } }) // Recherche de l'utilisateur
+    const user = await models.User.findOne({ where: { id: id } }) // Recherche de l'utilisateur
     if (userId === user.id) {
       if (req.file && user.photo) {
         newPhoto = `${req.protocol}://${req.get('host')}/api/upload/${
@@ -135,20 +148,17 @@ exports.updateAccount = (req, res) => {
 }
 
 // DELETE //
-exports.deleteAccount = (req, res) => {
+exports.deleteAccount = async (req, res) => {
+  // Comment récupré le id utilisateur ? + ajouté l'admin //
   try {
-    const id = req.params.id
-    const user = models.User.findOne({ where: { id: id } })
-    if (user.photo !== null) {
-      const filename = user.photo.split('/upload')[1]
-      fs.unlink(`upload/${filename}`, () => {
-        // Suppression de la photo du compte
-        models.User.destroy({ where: { id: id } })
-        res.status(200).json({ message: 'Utilisateur supprimé' })
-      })
+    const user = await models.User.findOne({ where: { id: req.params.id } })
+    if (!user) {
+      return res.status(400).json({ error: error })
     } else {
-      models.User.destroy({ where: { id: id } }) // Suppression du compte
-      res.status(200).json({ message: 'Utilisateur supprimé' })
+      models.User.destroy({ where: { id: req.params.id } })
+      models.Post.destroy({ where: { id: req.params.id } })
+      models.Comment.destroy({ where: { id: req.params.id } })
+      res.status(200).json({ message: 'Ce compte a bien été supprimé' })
     }
   } catch (error) {
     return res.status(500).send({ error: 'Erreur serveur' })

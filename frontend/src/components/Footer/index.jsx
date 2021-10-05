@@ -1,52 +1,39 @@
 import styled from 'styled-components'
 
-const FooterContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-`
-const FooterUl = styled.ul`
-  list-style: none;
-  display: flex;
-`
-const FooterLink = styled.div`
+const StyledLink = styled.a`
   color: rgb(139, 139, 139);
-  text-decoration: none;
   &:hover {
-    color: black;
+    color: red;
     cursor: pointer;
-  }
-`
-const FooterLi = styled.li`
-  &:nth-child(2) {
-    margin-left: 60px;
-    margin-right: 30px;
-  }
-  ,
-  &:nth-child(3) {
-    margin-left: 30px;
-    margin-right: 60px;
   }
 `
 
 function Footer() {
   return (
-    <FooterContainer>
-      <nav>
-        <FooterUl>
-          <FooterLink>
-            <FooterLi>À propos</FooterLi>
-          </FooterLink>
-          <FooterLink>
-            <FooterLi>Confidentialité</FooterLi>
-          </FooterLink>
-          <FooterLink>
-            <FooterLi>Conditions</FooterLi>
-          </FooterLink>
-          <FooterLi>&copy; Groupomania 2021</FooterLi>
-        </FooterUl>
-      </nav>
-    </FooterContainer>
+    <footer>
+      <div className="container mt-3">
+        <div className="row">
+          <div className="col">
+            <ul className="list-inline list-unstyled text-center pt-2">
+              <li className="list-inline-item">
+                <StyledLink className="nav-link">A propos</StyledLink>
+              </li>
+              <li className="list-inline-item">
+                <StyledLink className="nav-link">Confidentialité</StyledLink>
+              </li>
+              <li className="list-inline-item">
+                <StyledLink
+                  className="nav-link danger"
+                  href="mailto:groupomania@contact.com"
+                >
+                  Contact
+                </StyledLink>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }
 
