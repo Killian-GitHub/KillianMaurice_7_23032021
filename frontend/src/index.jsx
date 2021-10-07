@@ -1,22 +1,16 @@
-// - pluggin - //
+// - Import - //
 import React from 'react'
 import ReactDOM from 'react-dom'
+import App from './App'
 
 // - utils - //
 import './styles/index.css'
 import './styles/fas-logo.css'
 
-// - components - //
-import Header from './components/Header'
-import Footer from './components/Footer'
-import SideBar from './components/SideBar'
-
 // - render - //
 ReactDOM.render(
   <React.StrictMode>
-    <Header />
-    <SideBar />
-    <Footer />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 )

@@ -3,7 +3,15 @@ import { useHistory } from 'react-router-dom'
 import HeaderLogo from '../../assets/logo/icon-left-font-small.png'
 
 const Logo = styled.img`
-  width: 10%;
+  @media screen and (min-width: 350px) {
+    width: 40%;
+  }
+  @media screen and (min-width: 500px) {
+    width: 25%;
+  }
+  @media screen and (min-width: 1000px) {
+    width: 12%;
+  }
 `
 
 const NavLink = styled.div`
