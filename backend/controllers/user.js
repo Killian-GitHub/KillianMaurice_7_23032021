@@ -37,6 +37,7 @@ exports.signup = async (req, res) => {
             lastName: req.body.lastName,
             email: req.body.email,
             password: hash,
+            photo: req.body.photo,
           })
           const userToken = jwt.sign(
             { userId: newUser.id },
@@ -84,6 +85,7 @@ exports.login = async (req, res) => {
         res.status(200).send({
           // Récupération du token utilisateur
           userId: user.id,
+          photo: user.photo,
           userToken,
         })
       }

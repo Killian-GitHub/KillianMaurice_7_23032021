@@ -1,69 +1,65 @@
 // Imports >
 const jwtToken = require('../middleware/auth')
+const jwt = require('jsonwebtoken')
 const models = require('../models')
+// const jwtCheck = require('../utils/jwt')
 const fs = require('fs')
 
-// CREATE //
-exports.createPost = (req, res) => {
-  const userId = jwtToken.getUserId(req)
-  let imageUrl
+// CREATE POST //
+exports.createPost = async (req, res) => {
   try {
-    const user = models.User.findOne({
-      attributes: ['firstName', 'lastName', 'id', 'photo'],
+    const content = req.body.message
+    // Permet de vérifier que tous les champs sont complétés
+    if (content == null || content == '') {
+      return res
+        .status(400)
+        .json({ error: "Votre publication n'a pas de contenu" })
+    }
+    // Permet de contrôler la longueur du titre et du contenu du message
+    if (content.length <= 3) {
+      return res.status(400).json({
+        error: 'Le contenu du message doit contenir au moins 3 caractères',
+      })
+    }
+    const userId = req.body.decodedToken.userId
+    await models.User.findOne({
       where: { id: userId },
     })
-    if (user !== null) {
-      if (req.file) {
-        imageUrl = `${req.protocol}://${req.get('host')}/images/${
-          req.file.filename
-        }`
-      } else {
-        imageUrl = null
-      }
-      const post = models.Post.create({
-        include: [
-          {
-            model: models.User,
-            attributes: ['firstName', , 'lastName', 'photo', 'id'],
-          },
-        ],
-        message: req.body.message,
-        image: imageUrl,
-        userId: user.id,
-      })
-      res
-        .status(201)
-        .json({ post: post, message: 'Votre publication est ajouté' })
-    } else {
-      res.status(400).send({ error: 'La publication à échoué' })
-    }
-  } catch (error) {
-    return res.status(500).send({ error: 'Erreur serveur' })
+    models.Post.create({
+      message: req.body.message,
+      image: req.body.image
+        ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        : req.body.image,
+      UserId: userId,
+    })
+    res.status(201).json({ message: 'Votre message a bien été créé !' })
+  } catch {
+    res.status(404).json({ error: 'Erreur serveur' })
   }
 }
 
 // GET ALL POSTS //
-exports.getAllPosts = (req, res) => {
+exports.getAllPosts = async (req, res) => {
   try {
-    const posts = models.Post.findAll({
+    const posts = await models.Post.findAll({
       attributes: ['id', 'message', 'image', 'createdAt'],
       order: [['createdAt', 'DESC']],
       include: [
         {
-          model: models.User,
+          model: await models.User,
           attributes: ['firstName', 'lastName', 'id', 'photo'],
         },
-        {
-          model: models.Comment,
-          attributes: ['message', 'firstName', 'lastName', 'userId', 'id'],
-          order: [['createdAt', 'DESC']],
-          include: [
-            {
-              model: models.User,
-              attributes: ['photo', 'firstName', 'lastName'],
-            },
-          ],
-        },
+        // {
+        //   model: await models.Comment,
+        //   attributes: ['message', 'userId'],
+        //   order: [['createdAt', 'DESC']],
+        //   include: [
+        //     {
+        //       model: await models.User,
+        //       attributes: ['photo', 'firstName', 'lastName'],
+        //     },
+        //   ],
+        // },
       ],
     })
     res.status(200).send(posts)
@@ -107,7 +103,7 @@ exports.getOnePost = (req, res) => {
 exports.updatePost = (req, res) => {
   try {
     let newImageUrl
-    const userId = jwtToken.getUserId(req)
+    const userId = req.body.decodedToken.userId
     let post = models.Post.findOne({ where: { id: req.params.id } })
     if (userId === post.userId) {
       if (req.file) {
@@ -166,53 +162,6 @@ exports.deletePost = (req, res) => {
       res
         .status(400)
         .json({ message: 'Vous ne pouvez pas supprimer cette publication' })
-    }
-  } catch (error) {
-    return res.status(500).send({ error: 'Erreur serveur' })
-  }
-}
-
-// ADD COMMENT //
-exports.addComment = (req, res) => {
-  try {
-    const firstName = req.body.firstName
-    const lastName = req.body.lastName
-    const message = req.body.message
-    const newComment = models.Comment.create({
-      firstName: firstName,
-      lastName: lastName,
-      message: message,
-      userId: jwtToken.getUserId(req),
-      postId: req.params.id,
-    })
-
-    res
-      .status(201)
-      .json({ newComment, message: 'Votre commentaire est publié' })
-  } catch (error) {
-    return res.status(500).send({ error: 'Erreur serveur' })
-  }
-}
-
-// DELETE COMMENT //
-exports.deleteComment = (req, res) => {
-  try {
-    const userId = jwtToken.getUserId(req)
-    const isAdmin = models.User.findOne({ where: { id: userId } })
-    const comment = models.Comment.findOne({
-      where: { id: req.params.id },
-    })
-
-    if (userId === comment.userId || isAdmin.admin === true) {
-      models.Comment.destroy(
-        { where: { id: req.params.id } },
-        { truncate: true }
-      )
-      res.status(200).json({ message: 'Ce commentaire est supprimé' })
-    } else {
-      res
-        .status(400)
-        .json({ message: 'Vous ne pouvez pas supprimer ce commentaire' })
     }
   } catch (error) {
     return res.status(500).send({ error: 'Erreur serveur' })

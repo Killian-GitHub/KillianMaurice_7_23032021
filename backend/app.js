@@ -1,18 +1,27 @@
 // Imports >
 const express = require('express')
 const helmet = require('helmet')
-const bodyParser = require('body-parser')
 const cors = require('cors')
+const bodyParser = require('body-parser')
 const path = require('path')
 const apiRouter = require('./routes/route').router
 
 // App express
 const app = express()
 
+const corsOptions = {
+  origin: '*',
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+}
+
 // Plugin
 app.use(bodyParser.urlencoded({ extended: true })) // parse des objets inclus dans d'autres
 app.use(bodyParser.json())
 app.use(helmet())
+app.use(cors(corsOptions))
+
+require('dotenv').config()
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
