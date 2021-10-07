@@ -57,7 +57,8 @@ function Login() {
             ...prevState,
           }))
           window.localStorage.setItem('token', res.data.userToken)
-          window.localStorage.setItem('id', res.data.userId.id)
+          window.localStorage.setItem('photo', res.data.photo)
+          // window.localStorage.setItem('id', res.data.userId)
           history.push('/posts')
         }
       })

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import UserIcon from '../../assets/logo/user.png'
 import axios from 'axios'
 
 import '../../styles/login.css'
@@ -34,6 +35,7 @@ function Signup() {
       lastName: state.lastName,
       email: state.email,
       password: state.password,
+      photo: UserIcon,
     }
     axios({
       method: 'post',
