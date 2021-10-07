@@ -1,15 +1,21 @@
-# Create React App
+#### Welcome to the Groupomania project made with `REACT, NODE.JS and MYSQL`
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+You can download this project and launch the application by following the following instructions.
 
-## Available Scripts
+### First open the backend file
 
-In the project directory, you can run:
+Download node_modules with the command "npm install"
 
-### `yarn start`
+Run the server with the command "node server" or "nodemon serve"
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The server should start on port 3000 [http://localhost:3000]
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Then open the frontend file
+
+Download node_modules with the command "npm install"
+
+Run the server with "npm start" or "yarn start"
+
+Accept the invitation of the app to open it on a port other than 3000
+
+# Good visit !
