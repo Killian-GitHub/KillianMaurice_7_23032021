@@ -1,80 +1,71 @@
+// Import
 const models = require('../models')
 
-// CREATE COMMENT //
+// - - - CREATE - - - //
 exports.addComment = async (req, res) => {
   try {
-    const content = req.body.message
-    // Permet de vérifier que tous les champs sont complétés
-    if (content == null || content == '') {
-      return res
-        .status(400)
-        .json({ error: "Votre commentaire n'a pas de contenu" })
-    }
-    // Permet de contrôler la longueur du titre et du contenu du message
-    if (content.length <= 3) {
-      return res.status(400).json({
-        error: 'Le contenu du commentaire doit contenir au moins 3 caractères',
-      })
-    }
+    // Recherche de l'utilisateur
     const userId = req.body.decodedToken.userId
     await models.User.findOne({
       where: { id: userId },
     })
+    // Envoie du commentaire
     models.Comment.create({
-      message: req.body.message,
+      PostId: req.params.id,
       UserId: userId,
-      postId: req.params.id,
+      message: req.body.message,
     })
-    res.status(201).json({ message: 'Votre message a bien été créé !' })
-  } catch {
-    res.status(404).json({ error: 'Erreur serveur' })
+    return res
+      .status(201)
+      .json({ message: 'Votre commentaire a bien été créé !' })
+  } catch (error) {
+    return res.status(400).json({ error })
   }
 }
 
-// GET COMMENT //
+// - - - GET - - - //
 exports.getComment = async (req, res) => {
-  await models.Comment.findAll({
-    order: [['createdAt', 'DESC']],
-    include: [
-      {
-        model: await models.User,
-        attributes: ['firstName', 'lastName', 'photo'],
-      },
-    ],
-  })
-    .then(function (comments) {
-      if (comments) {
-        res.status(200).send(comments)
-      } else {
-        res.status(404).json({ error: 'Pas de commentaires trouvé' })
-      }
-    })
-    .catch(function (err) {
-      console.log(err)
-      res.status(500).send({ error: 'Une erreur est survenue' })
-    })
-}
-// DELETE COMMENT //
-exports.deleteComment = (req, res) => {
   try {
-    const userId = req.body.decodedToken.userId
-    const isAdmin = models.User.findOne({ where: { id: userId } })
-    const comment = models.Comment.findOne({
-      where: { id: req.params.id },
+    // Recherche des commentaires
+    const comments = await models.Comment.findAll({
+      order: [['createdAt', 'DESC']],
+      // Recherche des utilisateurs
+      include: [
+        {
+          model: await models.User,
+          attributes: ['firstName', 'lastName', 'id', 'photo'],
+        },
+      ],
     })
-
-    if (userId === comment.userId || isAdmin.admin === true) {
-      models.Comment.destroy(
-        { where: { id: req.params.id } },
-        { truncate: true }
-      )
-      res.status(200).json({ message: 'Ce commentaire est supprimé' })
-    } else {
-      res
-        .status(400)
-        .json({ message: 'Vous ne pouvez pas supprimer ce commentaire' })
-    }
+    return res.status(200).json({ comments })
   } catch (error) {
-    return res.status(500).send({ error: 'Erreur serveur' })
+    return res.status(500).json({
+      error: "Impossible d'afficher les commentaires",
+    })
+  }
+}
+
+// - - - DELETE - - - //
+exports.deleteComment = async (req, res) => {
+  // Recherche de l' utilisateur
+  const userId = await req.body.decodedToken.userId
+  // Recherche du commentaire
+  const comment = await models.Comment.findOne({
+    where: {
+      id: req.params.id,
+    },
+  })
+  // Condition de suppression (User ou Admin)
+  if (userId === comment.userId || userId.admin === true) {
+    models.Comment.destroy({
+      where: {
+        id: req.params.id,
+      },
+    })
+    return res.status(200).json({ message: 'Commentaire supprimé !' })
+  } else {
+    return res
+      .status(400)
+      .json({ message: 'Vous ne pouvez pas supprimer ce Commentaire' })
   }
 }

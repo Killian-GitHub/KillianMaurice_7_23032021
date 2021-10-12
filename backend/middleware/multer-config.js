@@ -5,7 +5,6 @@ const MIME_TYPES = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
   'image.gif': 'gif',
-  'image.webp': 'webp',
 }
 
 const storage = multer.diskStorage({
@@ -13,7 +12,7 @@ const storage = multer.diskStorage({
     callback(null, 'upload')
   },
   filename: (req, file, callback) => {
-    const name = file.originalname.replace(/\.[^/.]+$/, '')
+    const name = file.originalname.split(' ').join('_')
     const extension = MIME_TYPES[file.mimetype]
     callback(null, name + Date.now() + '.' + extension)
   },

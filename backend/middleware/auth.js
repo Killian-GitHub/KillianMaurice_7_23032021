@@ -6,14 +6,14 @@ module.exports = (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.AUTH_TOKEN)
     const userId = decodedToken.userId
     if (req.body.userId && req.body.userId !== userId) {
-      throw 'Invalid user ID'
+      throw 'ID utilisateur invalide'
     } else {
       req.body.decodedToken = decodedToken
       next()
     }
   } catch {
     res.status(401).json({
-      error: new Error('Invalid request!'),
+      error: new Error('Requête invalide'),
     })
   }
 }
