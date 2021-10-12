@@ -1,68 +1,50 @@
+// Import
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import UserIcon from '../../assets/logo/user.png'
 import axios from 'axios'
-
-import '../../styles/login.css'
+import UserIcon from '../../assets/logo/user.png'
 import ConnectionLogo from '../../assets/logo/icon-above-font-small.png'
+import '../../styles/login.css'
 
 function Signup() {
   // Initialisation du state
-  const [state, setState] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-  })
-
-  // History
-  let history = useHistory()
-
-  // Récupération des valeurs
-  const handleChange = (e) => {
-    const { id, value } = e.target
-    setState((prevState) => ({
-      ...prevState,
-      [id]: value,
-    }))
-  }
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   // Initialisation de bouton
   const submitClick = (e) => {
     e.preventDefault()
+    // Récupération des saisie + photo par défaut
     const formValues = {
-      firstName: state.firstName,
-      lastName: state.lastName,
-      email: state.email,
-      password: state.password,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
       photo: UserIcon,
     }
+    // Requète API
     axios({
-      method: 'post',
+      method: 'POST',
       url: 'http://localhost:3000/api/users/signup',
       data: formValues,
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
       },
     })
       .then((res) => {
         console.log(res)
-        if (res.status === 201) {
-          setState((prevState) => ({
-            ...prevState,
-          }))
-          window.alert(
-            'Votre compte a bien été créé, a présent veuillez vous connecter'
-          )
-          history.push('/login')
-        } else {
-          window.alert('Une erreur est survenue')
-          console.log(res)
-        }
+        window.alert(
+          'Votre compte a bien été créé, a présent veuillez vous connecter'
+        )
+        window.location.href = '/login'
       })
       .catch((err) => {
-        alert("Veuillez bien remplir le formulaire d'inscription")
         console.log(err)
+        alert(
+          "Une érreur est survenue, veillez à bien remplir le formulaire d'inscription"
+        )
       })
   }
   // Injection du composant
@@ -85,8 +67,8 @@ function Signup() {
             className="form-control bg-light text-center"
             id="firstName"
             placeholder="ex : Martin"
-            value={state.firstName}
-            onChange={handleChange}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
         </div>
       </div>
@@ -100,8 +82,8 @@ function Signup() {
             className="form-control bg-light text-center"
             id="lastName"
             placeholder="ex : Petit"
-            value={state.lastName}
-            onChange={handleChange}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
         </div>
       </div>
@@ -115,8 +97,8 @@ function Signup() {
             className="form-control bg-light text-center"
             id="email"
             placeholder="ex : martin-petit@gmail.com.com"
-            value={state.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
       </div>
@@ -130,8 +112,8 @@ function Signup() {
             className="form-control bg-light text-center"
             id="password"
             placeholder="ex : Votremotdepasse"
-            value={state.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
       </div>

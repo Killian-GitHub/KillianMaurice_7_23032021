@@ -1,5 +1,7 @@
+// Import
 import styled from 'styled-components'
 
+//Style
 const StyledLink = styled.a`
   color: rgb(139, 139, 139);
   &:hover {
@@ -8,6 +10,7 @@ const StyledLink = styled.a`
   }
 `
 
+// Component
 function Footer() {
   return (
     <footer>

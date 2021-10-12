@@ -1,4 +1,4 @@
-// - Import - //
+// Import
 import React, { createContext } from 'react'
 import {
   BrowserRouter as Router,
@@ -8,19 +8,19 @@ import {
 } from 'react-router-dom'
 import jwtDecode from 'jwt-decode'
 
-// - Components - //
+// Components
 import Header from './components/Header'
 import Footer from './components/Footer'
-import Login from './components/Connection/Login'
-import Signup from './components/Connection/Signup'
-import NewPost from './pages/NewPost'
-import NewsFeed from './pages/NewsFeed'
+import Login from './components/Login'
+import Signup from './components/Signup'
+import NewPost from './components/NewPost'
+import Feed from './components/Feed'
+import Profile from './components/Profile'
 
-// - Security - //
-
+// Security
 const userToken = () => {
-  if (localStorage.getItem('token')) {
-    const decodedToken = jwtDecode(localStorage.getItem('token'))
+  if (localStorage.getItem('accessToken')) {
+    const decodedToken = jwtDecode(localStorage.getItem('accessToken'))
     const dateNow = new Date()
     if (decodedToken.exp > dateNow / 1000) {
       return true
@@ -31,7 +31,7 @@ const userToken = () => {
   }
 }
 
-// - Auth routes - //
+// Auth routes
 const PrivateRoutes = ({ component: Component, path }) => {
   return (
     <Route
@@ -42,20 +42,29 @@ const PrivateRoutes = ({ component: Component, path }) => {
   )
 }
 
-// - Private routes - //
+// Private routes
 const dashboard = () => {
   return (
     <Context.Provider value={userToken}>
       <Header />
-      <NewPost exact path="/posts/new" />
-      <NewsFeed exact path="/posts" />
+      <NewPost exact path="/posts/" />
+      <Feed exact path="/posts/" />
     </Context.Provider>
   )
 }
-// - Context - //
+const profile = () => {
+  return (
+    <Context.Provider value={userToken}>
+      <Header />
+      <Profile exact path="/users/account" />
+    </Context.Provider>
+  )
+}
+
+// Context
 const Context = createContext()
 
-// - APP - //
+// APP
 const App = () => {
   return (
     <Router>
@@ -63,6 +72,7 @@ const App = () => {
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
         <PrivateRoutes component={dashboard} />
+        <PrivateRoutes component={profile} />
       </Switch>
       <Footer />
     </Router>

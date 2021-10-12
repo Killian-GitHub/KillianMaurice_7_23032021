@@ -1,7 +1,9 @@
+// Import
 import styled from 'styled-components'
 import { useHistory } from 'react-router-dom'
 import HeaderLogo from '../../assets/logo/icon-left-font-small.png'
 
+// Style
 const Logo = styled.img`
   @media screen and (min-width: 350px) {
     width: 40%;
@@ -13,14 +15,13 @@ const Logo = styled.img`
     width: 12%;
   }
 `
-
 const NavLink = styled.div`
   &:hover {
     cursor: pointer;
   }
 `
 
-// --- component --- //
+// Component
 function Header() {
   let history = useHistory()
   return (
@@ -48,8 +49,8 @@ function Header() {
               <li className="nav-item">
                 <NavLink
                   className="nav-link"
-                  onClick={(e) => {
-                    history.push('/users/accounts/:id')
+                  onClick={() => {
+                    window.location.href = '/users/account/'
                   }}
                 >
                   Paramètres
@@ -58,9 +59,9 @@ function Header() {
               <li className="nav-item">
                 <NavLink
                   className="nav-link"
-                  onClick={(e) => {
-                    window.localStorage.removeItem('token')
-                    window.localStorage.removeItem('id')
+                  onClick={() => {
+                    window.localStorage.removeItem('accessToken')
+                    window.localStorage.removeItem('userPhoto')
                     history.push('/')
                   }}
                 >

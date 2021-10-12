@@ -1,10 +1,10 @@
+// Import
 import React, { useState } from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
-import { useHistory } from 'react-router-dom'
 import ConnectionLogo from '../../assets/logo/icon-above-font-small.png'
 
-// Style >
+// Style
 const StyledLink = styled.a`
   color: rgb(139, 139, 139);
   text-decoration: none;
@@ -14,31 +14,17 @@ const StyledLink = styled.a`
   }
 `
 
-// Component >
+// Component
 function Login() {
-  const [state, setState] = useState({
-    email: '',
-    password: '',
-  })
-
-  // History
-  let history = useHistory()
-
-  // Récupération des valeurs
-  const handleChange = (e) => {
-    const { id, value } = e.target
-    setState((prevState) => ({
-      ...prevState,
-      [id]: value,
-    }))
-  }
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   // Initialisation de bouton
   const submitClick = (e) => {
     e.preventDefault()
     const formValues = {
-      email: state.email,
-      password: state.password,
+      email: email,
+      password: password,
     }
 
     // Envoi a l'API
@@ -52,22 +38,16 @@ function Login() {
     })
       .then((res) => {
         console.log(res)
-        if (res.status === 200) {
-          setState((prevState) => ({
-            ...prevState,
-          }))
-          window.localStorage.setItem('token', res.data.userToken)
-          window.localStorage.setItem('photo', res.data.photo)
-          // window.localStorage.setItem('id', res.data.userId)
-          history.push('/posts')
-        }
+        window.localStorage.setItem('accessToken', res.data.userToken)
+        window.localStorage.setItem('userPhoto', res.data.photo)
+        window.location.href = '/posts'
       })
       .catch((err) => {
-        window.alert('Adresse email ou mot de passe incorrect')
         console.log(err)
+        window.alert('Adresse email ou mot de passe incorrect')
       })
   }
-  // Render
+  // Component
   return (
     <section className="container mb-5 mt-5">
       <div className="text-center">
@@ -87,8 +67,8 @@ function Login() {
             className="form-control bg-light text-center"
             id="email"
             placeholder="ex : martin-petit@gmail.com.com"
-            value={state.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
       </div>
@@ -102,8 +82,8 @@ function Login() {
             className="form-control bg-light text-center"
             id="password"
             placeholder="ex : mot-de-passe"
-            value={state.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
       </div>

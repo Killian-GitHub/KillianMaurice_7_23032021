@@ -2,67 +2,50 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
-import { useHistory } from 'react-router-dom'
 import GroupLogo from '../../assets/logo/icon.svg'
 
 // Style
 const PostLogo = styled.img`
   height: 30px;
 `
+const AddImage = styled.input`
+  display: none;
+`
 
-// Photo de profile
-const userPhoto = localStorage.getItem('photo')
+// Récuperation de la photo de profile
+const userPhoto = localStorage.getItem('userPhoto')
 
 // Component
 function NewPost() {
-  const [state, setState] = useState({
-    newMessage: '',
-    newImage: '',
-  })
-
-  // History
-  let history = useHistory()
-
-  // Récupération des valeurs
-  const handleChange = (e) => {
-    const { id, value } = e.target
-    setState((prevState) => ({
-      ...prevState,
-      [id]: value,
-    }))
-  }
+  const [message, setMessage] = useState('')
+  const [image, setImage] = useState('')
 
   // Initialisation de bouton
   const submitClick = (e) => {
     e.preventDefault()
     const postValues = {
-      message: state.newMessage,
-      image: state.newImage,
+      message: message,
+      image: image,
     }
 
     // Envoi a l'API
     axios({
       method: 'post',
-      url: 'http://localhost:3000/api/posts/new',
+      url: 'http://localhost:3000/api/posts/',
       data: postValues,
       headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
       },
     })
       .then((res) => {
         console.log(res)
-        if (res.status === 201) {
-          setState((prevState) => ({
-            ...prevState,
-          }))
-          window.location.href = '/posts'
-          history.push('/posts')
-        }
+        // window.location.href = '/posts'
+        window.location.reload()
       })
       .catch((err) => {
-        window.alert('Publication impossible')
         console.log(err)
+        window.alert('Publication impossible')
       })
   }
 
@@ -77,28 +60,36 @@ function NewPost() {
           />
         </div>
         <div className="row">
-          <div className="mt-3 mb-2 col-md-11 mx-auto">
+          <div className="mt-3 mb-2 col-11 mx-auto">
             <textarea
               type="text"
               className="form-control"
               id="newMessage"
               placeholder="Ajouter une publication"
               rows="3"
-              value={state.newMessage}
-              onChange={handleChange}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             ></textarea>
           </div>
           <span className="border-bottom col-11 my-2 mx-auto"></span>
         </div>
         <div className="row mt-2 mb-3 mx-auto d-flex justify-content-around">
-          <button
+          {/* <button
             className="btn btn-light btn-sm col-4 "
-            value={state.newImage}
-            onChange={handleChange}
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
             type="file"
           >
             Ajouter une image
-          </button>
+          </button> */}
+          <label className="btn btn-light btn-sm col-4">
+            <AddImage
+              type="file"
+              multiple
+              onChange={(e) => setImage(e.target.value)}
+            />
+            Ajouter une image
+          </label>
           <PostLogo
             src={GroupLogo}
             alt="Logo de groupomania"

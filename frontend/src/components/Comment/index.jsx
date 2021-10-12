@@ -2,28 +2,20 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
-import UserIcon from '../../assets/logo/user-icon.png'
 
 // Style
-const UserPhoto = styled.div`
-  height: 70px;
-  padding: 5px;
-`
-
 const PostUser = styled.div`
   display: flex;
 `
-
 const UserInfo = styled.p`
   margin: 0;
 `
-
 const CommentUserPhoto = styled.img`
   height: 55px;
   padding: 2px;
 `
 
-// Render
+// Component
 function Comment(params) {
   useEffect(() => {
     fetchComments(params)
@@ -74,8 +66,8 @@ function Comment(params) {
       {/* {comments
         .filter((comment) => comment.postId === post.id)
         .map((comment, id) => {
-          ;<> */}
-      {/* <div key={comment.id}>
+          ;<>
+            <div key={comment.id}>
               <div className="row">
                 <PostUser className="col-11 mt-3 mx-auto">
                   <CommentUserPhoto
@@ -93,8 +85,8 @@ function Comment(params) {
                 </PostUser>
               </div>
             </div>
-          </> */}
-      {/* //     })} */}
+          </>
+        })} */}
     </>
   )
 }
