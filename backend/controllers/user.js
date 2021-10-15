@@ -72,7 +72,9 @@ exports.getAccount = async (req, res) => {
   try {
     const userId = req.body.decodedToken.userId
     const user = await models.User.findOne({
-      where: { id: userId },
+      where: {
+        id: userId,
+      },
     })
     res.status(200).send(user)
   } catch (error) {
@@ -80,45 +82,33 @@ exports.getAccount = async (req, res) => {
   }
 }
 
-// // - - - UPDATE - - - //
-// exports.updateAccount = async (req, res) => {
-//   try {
-//     const userId = req.body.decodedToken.userId
-//     let newPhoto
-//     const user = await models.User.findOne({ where: { id: req.params.id } }) // Recherche de l'utilisateur
-//     if (userId === user.id) {
-//       if (req.file && user.photo) {
-//         newPhoto = `${req.protocol}://${req.get('host')}/api/upload/${
-//           req.file.filename
-//         }`
-//         const filename = user.photo.split('/upload')[1]
-//         fs.unlink(`upload/${filename}`, (err) => {
-//           // Suppression de l'ancienne photo
-//           if (err) console.log(err)
-//           else {
-//             console.log(`Deleted file: upload/${filename}`)
-//           }
-//         })
-//       } else if (req.file) {
-//         newPhoto = `${req.protocol}://${req.get('host')}/api/upload/${
-//           req.file.filename
-//         }`
-//       }
-//       if (newPhoto) {
-//         user.photo = newPhoto
-//       }
-//       const newUser = user.save({ fields: 'photo' }) // Sauvegarde de la modification
-//       res.status(200).json({
-//         user: newUser,
-//         message: 'Vous avez modifié votre photo de profile',
-//       })
-//     } else {
-//       res.status(400).json({ message: "Vous n'avez pas les droits requis" })
-//     }
-//   } catch (error) {
-//     return res.status(500).send({ error: 'Erreur serveur' })
-//   }
-// }
+// - - - UPDATE - - - //
+exports.updateAccount = async (req, res) => {
+  try {
+    const userId = req.body.decodedToken.userId
+    const user = await models.User.findOne({
+      where: {
+        id: userId,
+      },
+    })
+    await models.User.update(
+      {
+        firstName: req.body.firstName ? req.body.firstName : user.firstName,
+        lastName: req.body.lastName ? req.body.lastName : user.lastName,
+        email: req.body.email ? req.body.email : user.email,
+      },
+      {
+        where: {
+          id: userId,
+        },
+      }
+    )
+    return res.status(200).send({ message: 'Modifications enrigistrés' })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({ error: 'Erreur serveur' })
+  }
+}
 
 // - - - DELETE - - - //
 exports.deleteAccount = async (req, res) => {

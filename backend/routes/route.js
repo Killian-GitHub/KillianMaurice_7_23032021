@@ -17,20 +17,18 @@ exports.router = (function () {
   // login >
   apiRouter.post('/users/login/', userCtrl.login)
   // getAccount >
-  apiRouter.get('/users/accounts/:id/', auth, userCtrl.getAccount)
+  apiRouter.get('/users/account/', auth, userCtrl.getAccount)
   // updateProfile >
-  apiRouter.put('/users/accounts/:id/', auth, multer, userCtrl.updateAccount)
+  apiRouter.put('/users/account/modify/', auth, multer, userCtrl.updateAccount)
   // deleteAccount >
-  apiRouter.delete('/users/accounts/:id/', auth, multer, userCtrl.deleteAccount)
+  apiRouter.delete('/users/account/delete/', auth, userCtrl.deleteAccount)
 
   // - - - POSTS ROUTES - - - //
 
   // new post >
-  apiRouter.post('/posts/new/', auth, multer, postCtrl.createPost)
+  apiRouter.post('/posts/', auth, multer, postCtrl.createPost)
   // get all post >
-  apiRouter.get('/posts/', postCtrl.getAllPosts)
-  // get one post >
-  apiRouter.get('/posts/:id/', postCtrl.getOnePost)
+  apiRouter.get('/posts/', auth, postCtrl.getAllPosts)
   // update post >
   apiRouter.put('/posts/:id/', auth, multer, postCtrl.updatePost)
   // delete post >
@@ -39,18 +37,11 @@ exports.router = (function () {
   // - - - COMMENTS ROUTES - - - //
 
   // add comment >
-  apiRouter.post('/posts/:id/comments/new', auth, commentCtrl.addComment)
+  apiRouter.post('/comments/:id', auth, commentCtrl.addComment)
   // get comment >
-  apiRouter.get('/posts/:id/comments/', commentCtrl.getComment)
+  apiRouter.get('/comments/', auth, commentCtrl.getComment)
   // delete comment >
-  apiRouter.delete('/posts/:id/comments/:id', auth, commentCtrl.deleteComment)
-
-  // // add comment >
-  // apiRouter.post('/comments/:id/', auth, commentCtrl.addComment)
-  // // get comment >
-  // apiRouter.get('/comments/', commentCtrl.getComment)
-  // // delete comment >
-  // apiRouter.delete('/comments/:id/', auth, commentCtrl.deleteComment)
+  apiRouter.delete('/comments/:id', auth, commentCtrl.deleteComment)
 
   return apiRouter
 })()

@@ -19,8 +19,10 @@ exports.createPost = async (req, res) => {
     }
     // Paramètres de l'image
     let imageUrl
-    if (req.body.image) {
-      imageUrl = `${req.protocol}://${req.get('host')}/images/${req.body.image}`
+    if (req.body.file) {
+      imageUrl = `${req.protocol}://${req.get('host')}/images/${
+        req.file.filename
+      }`
     } else {
       imageUrl = null
     }
@@ -66,47 +68,38 @@ exports.getAllPosts = async (req, res) => {
   }
 }
 
-// // - - - UPDATE - - - //
-// exports.updatePost = (req, res) => {
-//   try {
-//     let newImageUrl
-//     const userId = req.body.decodedToken.userId
-//     let post = models.Post.findOne({ where: { id: req.params.id } })
-//     if (userId === post.userId) {
-//       if (req.file) {
-//         newImageUrl = `${req.protocol}://${req.get('host')}/images/${
-//           req.file.filename
-//         }`
-//         if (post.imageUrl) {
-//           const filename = post.imageUrl.split('/images')[1]
-//           fs.unlink(`images/${filename}`, (err) => {
-//             if (err) console.log(err)
-//             else {
-//               console.log(`Suppression du fichier: images/${filename}`)
-//             }
-//           })
-//         }
-//       }
-//       if (req.body.message) {
-//         post.message = req.body.message
-//       }
-//       post.imageUrl = newImageUrl
-//       const newPost = post.save({
-//         fields: ['message', 'firstName', 'lastName', 'imageUrl'],
-//       })
-//       res
-//         .status(200)
-//         .json({ newPost: newPost, message: 'Votre publication est modifiée' })
-//     } else {
-//       res
-//         .status(400)
-//         .json({ message: 'Vous ne pouvez pas modifié cette publication' })
-//     }
-//   } catch (error) {
-//     return res.status(500).send({ error: 'Erreur serveur' })
-//   }
-// }
-
+// - - - UPDATE - - - //
+exports.updatePost = async (req, res) => {
+  try {
+    const userId = req.body.decodedToken.userId
+    const post = await models.Post.findOne({
+      where: {
+        id: req.params.id,
+      },
+    })
+    if (userId === post.userId || userId.admin === true) {
+      await models.Post.update(
+        {
+          message: req.body.message ? req.body.message : post.message,
+          image: req.body.image ? req.body.image : user.image,
+        },
+        {
+          where: {
+            id: req.params.id,
+          },
+        }
+      )
+      return res.status(200).send({ message: 'Modifications enrigistrés' })
+    } else {
+      return res
+        .status(400)
+        .json({ message: 'Vous ne pouvez pas modifier ce post' })
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({ error: 'Erreur serveur' })
+  }
+}
 // - - - DELETE - - - //
 exports.deletePost = async (req, res) => {
   // Recherche de l'utilisateur
