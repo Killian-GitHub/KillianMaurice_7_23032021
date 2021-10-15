@@ -18,14 +18,14 @@ const userPhoto = localStorage.getItem('userPhoto')
 // Component
 function NewPost() {
   const [message, setMessage] = useState('')
-  const [image, setImage] = useState('')
+  const [selectedImage, setSelectedImage] = useState(null)
 
   // Initialisation de bouton
   const submitClick = (e) => {
     e.preventDefault()
     const postValues = {
       message: message,
-      image: image,
+      image: selectedImage,
     }
 
     // Envoi a l'API
@@ -60,6 +60,25 @@ function NewPost() {
           />
         </div>
         <div className="row">
+          {selectedImage && (
+            <div>
+              <img
+                className="text-center ms-5"
+                alt="not fount"
+                // width={'200px'}
+                height={'150px'}
+                src={URL.createObjectURL(selectedImage)}
+              />
+              <button
+                className="btn btn-danger btn-sm ms-3"
+                onClick={() => setSelectedImage(null)}
+              >
+                X
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="row">
           <div className="mt-3 mb-2 col-11 mx-auto">
             <textarea
               type="text"
@@ -74,19 +93,14 @@ function NewPost() {
           <span className="border-bottom col-11 my-2 mx-auto"></span>
         </div>
         <div className="row mt-2 mb-3 mx-auto d-flex justify-content-around">
-          {/* <button
-            className="btn btn-light btn-sm col-4 "
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            type="file"
-          >
-            Ajouter une image
-          </button> */}
           <label className="btn btn-light btn-sm col-4">
             <AddImage
               type="file"
-              multiple
-              onChange={(e) => setImage(e.target.value)}
+              name="myImage"
+              onChange={(event) => {
+                console.log(event.target.files[0])
+                setSelectedImage(event.target.files[0])
+              }}
             />
             Ajouter une image
           </label>

@@ -47,8 +47,8 @@ const dashboard = () => {
   return (
     <Context.Provider value={userToken}>
       <Header />
-      <NewPost exact path="/posts/" />
-      <Feed exact path="/posts/" />
+      <NewPost />
+      <Feed />
     </Context.Provider>
   )
 }
@@ -56,7 +56,7 @@ const profile = () => {
   return (
     <Context.Provider value={userToken}>
       <Header />
-      <Profile exact path="/users/account" />
+      <Profile />
     </Context.Provider>
   )
 }
@@ -69,10 +69,10 @@ const App = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/signup" component={Signup} />
-        <PrivateRoutes component={dashboard} />
-        <PrivateRoutes component={profile} />
+        <Route path="/login" exact component={Login} />
+        <Route path="/signup" exact component={Signup} />
+        <PrivateRoutes path="/" exact component={dashboard} />
+        <PrivateRoutes path="/account" exact component={profile} />
       </Switch>
       <Footer />
     </Router>

@@ -24,6 +24,10 @@ const CommentUserPhoto = styled.img`
   height: 55px;
   padding: 2px;
 `
+const StyledButton = styled.div`
+  color: rgb(205, 77, 82);
+  cursor: pointer;
+`
 
 // Composant
 function Feed() {
@@ -48,6 +52,34 @@ function Feed() {
         window.alert('Récupération des publications impossible')
       })
   }, [])
+
+  // Modifier un post
+  const [newPostMessage, setNewPostMessage] = useState([])
+  const [newPostImage, setNewPostImage] = useState([])
+  const updatePostClick = (e, id) => {
+    const formValues = {
+      message: newPostMessage,
+      image: newPostImage,
+    }
+    e.preventDefault()
+    axios({
+      method: 'put',
+      url: 'http://localhost:3000/api/posts/' + id,
+      data: formValues,
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        console.log(res)
+        window.location.reload()
+      })
+      .catch((err) => {
+        console.log(err)
+        window.alert('Modification du post impossible')
+      })
+  }
 
   // Supprimer un post
   const deletePostClick = (e, id) => {
@@ -149,7 +181,7 @@ function Feed() {
                   <PostUser className="col-10 mt-3">
                     <UserPhoto
                       src={post.User.photo}
-                      className="img-fluid"
+                      className="img-fluid me-1"
                       alt="Photo de profile"
                     />
                     <div className="my-auto">
@@ -176,7 +208,12 @@ function Feed() {
                       aria-labelledby="dropdownMenuButton1"
                     >
                       <li>
-                        <div className="dropdown-item">Modifier</div>
+                        <div
+                          className="dropdown-item"
+                          onClick={(e) => updatePostClick(e, post.id)}
+                        >
+                          Modifier
+                        </div>
                       </li>
                       <li>
                         <hr className="dropdown-divider" />
@@ -208,11 +245,11 @@ function Feed() {
                   .map((comment, id) => {
                     return (
                       <div key={id}>
-                        <div className="row">
-                          <PostUser className="col-10 mt-3 mx-auto">
+                        <div className="row d-flex justify-content-between">
+                          <PostUser className="col-9 mt-3 ms-3">
                             <CommentUserPhoto
                               src={comment.User.photo}
-                              className="img-fluid"
+                              className="img-fluid me-2"
                               alt="Logo de groupomania"
                             />
                             <div className="my-auto bg-light px-2 py-1">
@@ -222,16 +259,19 @@ function Feed() {
                               >
                                 {comment.User.firstName} {comment.User.lastName}
                               </UserInfo>
-                              <UserInfo id="newComment">
+                              <UserInfo
+                                id="newComment"
+                                className="text-secondary"
+                              >
                                 {comment.message}
                               </UserInfo>
                             </div>
                           </PostUser>
                           <div className="col-2 my-auto">
-                            <i
+                            <StyledButton
                               className="far fa-trash-alt"
                               onClick={(e) => deleteCommentClick(e, comment.id)}
-                            ></i>
+                            ></StyledButton>
                           </div>
                         </div>
                       </div>

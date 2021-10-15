@@ -96,7 +96,7 @@ function Signup() {
             type="text"
             className="form-control bg-light text-center"
             id="email"
-            placeholder="ex : martin-petit@gmail.com.com"
+            placeholder="ex : martin-petit@gmail.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
