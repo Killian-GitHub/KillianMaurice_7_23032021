@@ -18,8 +18,8 @@ exports.createPost = async (req, res) => {
       })
     }
     // Paramètres de l'image
-    let imageUrl
-    if (req.body.file) {
+    let imageUrl = req.body.file
+    if (imageUrl) {
       imageUrl = `${req.protocol}://${req.get('host')}/images/${
         req.file.filename
       }`
@@ -61,6 +61,29 @@ exports.getAllPosts = async (req, res) => {
       ],
     })
     return res.status(200).send(posts)
+  } catch (error) {
+    return res.status(500).send({
+      error: "Impossible d'afficher les publications",
+    })
+  }
+}
+
+// - - - GET - - - //
+exports.getOnePost = async (req, res) => {
+  try {
+    // Recherche des post
+    const post = await models.Post.findOne({
+      where: { id: req.params.id },
+      include: [
+        // Recherche des utilisateurs
+        {
+          model: await models.User,
+          attributes: ['firstName', 'lastName', 'id', 'photo'],
+        },
+      ],
+    })
+    console.log(post)
+    return res.status(200).send(post)
   } catch (error) {
     return res.status(500).send({
       error: "Impossible d'afficher les publications",

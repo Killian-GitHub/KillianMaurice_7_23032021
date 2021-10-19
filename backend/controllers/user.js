@@ -58,6 +58,7 @@ exports.login = async (req, res) => {
         )
         res.status(200).send({
           photo: user.photo,
+          id: user.id,
           userToken,
         })
       }
@@ -76,7 +77,7 @@ exports.getAccount = async (req, res) => {
         id: userId,
       },
     })
-    res.status(200).send(user)
+    return res.status(200).send(user)
   } catch (error) {
     return res.status(500).json({ error: 'Erreur serveur' })
   }

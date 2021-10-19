@@ -29,6 +29,8 @@ exports.router = (function () {
   apiRouter.post('/posts/', auth, multer, postCtrl.createPost)
   // get all post >
   apiRouter.get('/posts/', auth, postCtrl.getAllPosts)
+  // get one post >
+  apiRouter.get('/posts/:id', auth, postCtrl.getOnePost)
   // update post >
   apiRouter.put('/posts/:id/', auth, multer, postCtrl.updatePost)
   // delete post >
