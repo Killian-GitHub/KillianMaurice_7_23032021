@@ -1,4 +1,5 @@
 # dependencies
+images
 /node_modules
 
 #pluggin
@@ -6,5 +7,4 @@
 .eslintrc
 
 # Config
-
 .env

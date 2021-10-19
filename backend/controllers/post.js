@@ -18,7 +18,7 @@ exports.createPost = async (req, res) => {
       })
     }
     // Paramètres de l'image
-    let imageUrl = req.body.file
+    let imageUrl = req.file
     if (imageUrl) {
       imageUrl = `${req.protocol}://${req.get('host')}/images/${
         req.file.filename
@@ -27,7 +27,7 @@ exports.createPost = async (req, res) => {
       imageUrl = null
     }
     // Récupération de l'utilisateur
-    const userId = req.body.decodedToken.userId
+    const userId = res.locals.decodedToken.userId
     await models.User.findOne({
       where: { id: userId },
     })

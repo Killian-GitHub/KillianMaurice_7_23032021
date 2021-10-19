@@ -9,6 +9,7 @@ module.exports = (req, res, next) => {
       throw 'ID utilisateur invalide'
     } else {
       req.body.decodedToken = decodedToken
+      res.locals.decodedToken = decodedToken
       next()
     }
   } catch {
