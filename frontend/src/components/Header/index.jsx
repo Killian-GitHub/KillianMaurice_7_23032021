@@ -1,30 +1,34 @@
 // Import
 import styled from 'styled-components'
-import { useHistory, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import HeaderLogo from '../../assets/logo/icon-left-font-small.png'
 
 // Style
 const Logo = styled.img`
   @media screen and (min-width: 350px) {
-    width: 40%;
+    width: 45%;
   }
   @media screen and (min-width: 500px) {
-    width: 25%;
+    width: 30%;
   }
   @media screen and (min-width: 1000px) {
-    width: 12%;
+    width: 15%;
   }
   &:hover {
     cursor: pointer;
   }
 `
+const NavLink = styled.div`
+  @media screen and (min-width: 1000px) {
+    margin-left: 65%;
+  }
+`
 
 // Component
 function Header() {
-  let history = useHistory()
   return (
     <header>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light ">
         <div className="container-fluid">
           <Logo
             src={HeaderLogo}
@@ -35,7 +39,7 @@ function Header() {
             }}
           />
           <button
-            className="navbar-toggler"
+            className="navbar-toggler border border-2"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarTogglerDemo02"
@@ -45,9 +49,12 @@ function Header() {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+          <NavLink
+            className="collapse navbar-collapse"
+            id="navbarTogglerDemo02"
+          >
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
+              <li className="nav-item me-2">
                 <Link to="/account" className="nav-link">
                   Paramètres
                 </Link>
@@ -59,13 +66,14 @@ function Header() {
                   onClick={() => {
                     window.localStorage.removeItem('accessToken')
                     window.localStorage.removeItem('userPhoto')
+                    window.localStorage.removeItem('userId')
                   }}
                 >
                   Déconnexion
                 </Link>
               </li>
             </ul>
-          </div>
+          </NavLink>
         </div>
       </nav>
     </header>
@@ -73,83 +81,3 @@ function Header() {
 }
 
 export default Header
-
-// // Import
-// import styled from 'styled-components'
-// import { useHistory, Link } from 'react-router-dom'
-// import HeaderLogo from '../../assets/logo/icon-left-font-small.png'
-
-// // Style
-// const Logo = styled.img`
-//   @media screen and (min-width: 350px) {
-//     width: 40%;
-//   }
-//   @media screen and (min-width: 500px) {
-//     width: 25%;
-//   }
-//   @media screen and (min-width: 1000px) {
-//     width: 12%;
-//   }
-// `
-// const NavLink = styled.div`
-//   &:hover {
-//     cursor: pointer;
-//   }
-// `
-
-// // Component
-// function Header() {
-//   let history = useHistory()
-//   return (
-//     <header>
-//       <nav className="navbar navbar-expand-lg navbar-light bg-light">
-//         <div className="container-fluid">
-//           <Logo
-//             src={HeaderLogo}
-//             alt="Logo de groupomania"
-//             className="header-logo col-8"
-//           />
-//           <button
-//             className="navbar-toggler"
-//             type="button"
-//             data-bs-toggle="collapse"
-//             data-bs-target="#navbarTogglerDemo02"
-//             aria-controls="navbarTogglerDemo02"
-//             aria-expanded="false"
-//             aria-label="Toggle navigation"
-//           >
-//             <span className="navbar-toggler-icon"></span>
-//           </button>
-//           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-//             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-//               <li className="nav-item">
-//                 <NavLink
-//                   className="nav-link"
-//                   onClick={() => {
-//                     window.location.href = '/users/account/'
-//                   }}
-//                 >
-//                   Paramètres
-//                 </NavLink>
-//               </li>
-//               <li className="nav-item">
-//                 <NavLink
-//                   className="nav-link"
-//                   onClick={() => {
-//                     window.localStorage.removeItem('accessToken')
-//                     window.localStorage.removeItem('userPhoto')
-//                     history.push('/')
-//                   }}
-//                 >
-//                   Déconnexion
-//                 </NavLink>
-//               </li>
-//             </ul>
-//           </div>
-//         </div>
-//       </nav>
-//     </header>
-//   )
-// }
-
-// export default Header

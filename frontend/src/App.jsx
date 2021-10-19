@@ -14,8 +14,9 @@ import Footer from './components/Footer'
 import Login from './components/Login'
 import Signup from './components/Signup'
 import NewPost from './components/NewPost'
-import Feed from './components/Feed'
+import Home from './components/Home'
 import Profile from './components/Profile'
+import ModifyPost from './components/ModifyPost'
 
 // Security
 const userToken = () => {
@@ -48,7 +49,7 @@ const dashboard = () => {
     <Context.Provider value={userToken}>
       <Header />
       <NewPost />
-      <Feed />
+      <Home />
     </Context.Provider>
   )
 }
@@ -57,6 +58,14 @@ const profile = () => {
     <Context.Provider value={userToken}>
       <Header />
       <Profile />
+    </Context.Provider>
+  )
+}
+const modify = () => {
+  return (
+    <Context.Provider value={userToken}>
+      <Header />
+      <ModifyPost />
     </Context.Provider>
   )
 }
@@ -73,6 +82,7 @@ const App = () => {
         <Route path="/signup" exact component={Signup} />
         <PrivateRoutes path="/" exact component={dashboard} />
         <PrivateRoutes path="/account" exact component={profile} />
+        <PrivateRoutes path="/modify/:id/" exact component={modify} />
       </Switch>
       <Footer />
     </Router>

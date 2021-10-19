@@ -40,6 +40,7 @@ function Login() {
         console.log(res)
         window.localStorage.setItem('accessToken', res.data.userToken)
         window.localStorage.setItem('userPhoto', res.data.photo)
+        window.localStorage.setItem('userId', res.data.id)
         window.location.href = '/'
       })
       .catch((err) => {

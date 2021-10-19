@@ -14,79 +14,90 @@ const CommentUserPhoto = styled.img`
   height: 55px;
   padding: 2px;
 `
+const StyledButton = styled.div`
+  cursor: pointer;
+`
 
 // Component
-function Comment(params) {
-  useEffect(() => {
-    fetchComments(params)
-  }, [])
-
-  const [state] = useState({
-    firstName: '',
-    lastName: '',
-    photo: '',
-    message: '',
-    createdAt: '',
-  })
-
+function Comment(props) {
+  // Récuperation des commentaires
   const [comments, setComments] = useState([])
-
-  const fetchComments = (e) => {
-    // Récupération des informations
-    const commentsData = {
-      firstName: state.firstName,
-      lastName: state.lastName,
-      photo: state.photo,
-      message: state.message,
-      createdAt: state.createdAt,
-    }
-
-    // Envoi a l'API
+  useEffect(() => {
     axios({
       method: 'get',
-      url: 'http://localhost:3000/api/comments',
-      data: commentsData,
+      url: 'http://localhost:3000/api/comments/',
       headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
       },
     })
       .then((res) => {
-        const comments = res.data
-        setComments(comments)
-        window.location('/')
-        console.log(res)
+        setComments(res.data.comments)
       })
       .catch((err) => {
-        window.alert('Récupération impossible')
         console.log(err)
+        window.alert('Récupération des commentaires impossible')
+      })
+  }, [])
+
+  // Supprimer un commentaire
+  const deleteCommentClick = (e, id) => {
+    e.preventDefault()
+    axios({
+      method: 'delete',
+      url: 'http://localhost:3000/api/comments/' + id,
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        console.log(res)
+        window.location.reload()
+      })
+      .catch((err) => {
+        console.log(err)
+        window.alert('Suppression du commentaire impossible')
       })
   }
+
   return (
     <>
-      {/* {comments
-        .filter((comment) => comment.postId === post.id)
+      {comments
+        .filter((comment) => comment.PostId === props.id) // Récupération du postId dans les props
         .map((comment, id) => {
-          ;<>
-            <div key={comment.id}>
-              <div className="row">
-                <PostUser className="col-11 mt-3 mx-auto">
+          return (
+            <div key={id}>
+              <div className="row d-flex justify-content-between">
+                <PostUser className="col-9 mt-3 ms-3">
                   <CommentUserPhoto
                     src={comment.User.photo}
-                    className="img-fluid"
+                    className="img-fluid me-2"
                     alt="Logo de groupomania"
                   />
                   <div className="my-auto bg-light px-2 py-1">
                     <UserInfo className="font-weight-bold" id="userName">
                       {comment.User.firstName} {comment.User.lastName}
                     </UserInfo>
-                    <UserInfo id="newComment">{comment.message}</UserInfo>
-                    <p className="texte-light">{comment.createdAt} test</p>
+                    <UserInfo id="newComment" className="text-secondary">
+                      {comment.message}
+                    </UserInfo>
                   </div>
                 </PostUser>
+                <div className="col-2 my-auto">
+                  {(localStorage.getItem('userId') ===
+                    comment.User.id.toString() ||
+                    localStorage.getItem('userId') === 1) && (
+                    <StyledButton
+                      className="far fa-trash-alt color-secondary p-2 border border-2 rounded bg-light shadow-sm"
+                      onClick={(e) => deleteCommentClick(e, comment.id)}
+                    ></StyledButton>
+                  )}
+                </div>
               </div>
             </div>
-          </>
-        })} */}
+          )
+        })}
     </>
   )
 }
