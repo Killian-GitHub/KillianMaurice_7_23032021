@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
+import { validName, validEmail } from '../../utils/Regex'
 
 // Style
 const UserPhoto = styled.img`
@@ -51,32 +52,72 @@ function Profile() {
       })
   }, [])
 
+  // Validation des saisies
+  const [firstNameErr, setFirstNameErr] = useState(false)
+  const [lastNameErr, setLastNameErr] = useState(false)
+  const [emailErr, setEmailErr] = useState(false)
+
+  function formValid() {
+    let isValid = true
+
+    if (firstName) {
+      if (!validName.test(firstName)) {
+        setFirstNameErr(true)
+        isValid = false
+      } else {
+        setFirstNameErr(false)
+      }
+    }
+    if (lastName) {
+      if (!validName.test(lastName)) {
+        setLastNameErr(true)
+        isValid = false
+      } else {
+        setLastNameErr(false)
+      }
+    }
+    if (email) {
+      if (!validEmail.test(email)) {
+        setEmailErr(true)
+        isValid = false
+      } else {
+        setEmailErr(false)
+      }
+    }
+
+    return isValid
+  }
+
   // Modification du profil
   const modifyClick = (e) => {
     e.preventDefault()
 
-    let formData = new FormData()
-    formData.append('image', newPhoto)
-    formData.append('firstName', firstName)
-    formData.append('lastName', lastName)
-    formData.append('email', email)
+    const isValid = formValid()
 
-    axios({
-      method: 'put',
-      url: process.env.REACT_APP_API_URL + '/api/users/account/modify/',
-      data: formData,
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-      .then((res) => {
-        window.alert('Modifications enregistré')
-        window.location.href = '/account/'
+    if (isValid) {
+      let formData = new FormData()
+      formData.append('image', newPhoto)
+      formData.append('firstName', firstName)
+      formData.append('lastName', lastName)
+      formData.append('email', email)
+
+      axios({
+        method: 'put',
+        url: process.env.REACT_APP_API_URL + '/api/users/account/modify/',
+        data: formData,
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
+          'Content-Type': 'multipart/form-data',
+        },
       })
-      .catch((err) => {
-        window.alert('Modification du compte impossible')
-      })
+        .then((res) => {
+          window.alert('Modifications enregistré')
+          window.location.href = '/account/'
+        })
+        .catch((err) => {
+          window.alert('Modification du compte impossible')
+        })
+    }
   }
 
   // Suppression du profile
@@ -103,7 +144,7 @@ function Profile() {
 
   return (
     <div className="container">
-      <div className="border border-2 shadow rounded col-10 col-lg-7 mx-auto mt-5">
+      <div className="border border-2 shadow rounded col-12 col-md-10 col-lg-7 mx-auto mt-5">
         {!newPhoto && (
           <div className="d-flex justify-content-center mt-4">
             <UserPhoto
@@ -155,6 +196,12 @@ function Profile() {
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
+          {firstNameErr && (
+            <p className="text-danger text-center">
+              Les chiffres et symboles ne sont pas autorisés, utilisez entre 3
+              et 20 caractères
+            </p>
+          )}
         </div>
         <div className="row mt-2 mb-3">
           <p className="text-center mb-2">Nom :</p>
@@ -165,6 +212,12 @@ function Profile() {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
+          {lastNameErr && (
+            <p className="text-danger text-center">
+              Les chiffres et symboles ne sont pas autorisés, utilisez entre 3
+              et 20 caractères
+            </p>
+          )}
         </div>
         <div className="row mt-2 mb-4">
           <p className="text-center mb-2">Adresse email :</p>
@@ -175,6 +228,11 @@ function Profile() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {emailErr && (
+            <p className="text-danger text-center">
+              Adresse email invalide, veuillez entré votre adresse email
+            </p>
+          )}
         </div>
         <div className="row">
           <p

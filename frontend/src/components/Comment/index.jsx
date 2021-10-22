@@ -88,7 +88,7 @@ function Comment(props) {
                 <div className="col-2 me-2 my-auto">
                   {(localStorage.getItem('userId') ===
                     comment.User.id.toString() ||
-                    localStorage.getItem('userId') === 1) && (
+                    localStorage.getItem('userId') === '1') && (
                     <StyledButton
                       className="far fa-trash-alt color-secondary p-1 border border-2 rounded bg-light shadow-sm"
                       onClick={(e) => deleteCommentClick(e, comment.id)}

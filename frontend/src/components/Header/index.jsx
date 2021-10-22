@@ -20,7 +20,7 @@ const Logo = styled.img`
 `
 const NavLink = styled.div`
   @media screen and (min-width: 1000px) {
-    margin-left: 65%;
+    margin-left: 57%;
   }
 `
 
@@ -53,6 +53,11 @@ function Header() {
             id="navbarTogglerDemo02"
           >
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item me-2">
+                <Link to="/" className="nav-link">
+                  Accueil
+                </Link>
+              </li>
               <li className="nav-item me-2">
                 <Link to="/account" className="nav-link">
                   Paramètres

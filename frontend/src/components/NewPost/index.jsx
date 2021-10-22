@@ -14,6 +14,30 @@ const UserPhoto = styled.img`
   border-radius: 50%;
   object-fit: cover;
 `
+const NewImage = styled.img`
+  object-fit: cover;
+  @media screen and (min-width: 300px) {
+    height: 200px;
+    width: 100%;
+  }
+  @media screen and (min-width: 500px) {
+    height: 250px;
+    width: 100%;
+    padding: 0 2%;
+  }
+`
+const DeleteBtn = styled.button`
+  position: relative;
+  height: 32px;
+  @media screen and (min-width: 300px) {
+    right: -7px;
+    top: -40px;
+  }
+  @media screen and (min-width: 500px) {
+    right: -20px;
+    top: -40px;
+  }
+`
 
 // Récuperation de la photo de profil
 const userPhoto = localStorage.getItem('userPhoto')
@@ -87,25 +111,20 @@ function NewPost() {
       </div>
       {visible ? (
         <div className="container pt-2 pb-2">
-          <div className="col-md-10 col-lg-6 bg-light py-4 px-1 mx-auto">
-            <div className="row">
-              {image && (
-                <div className="d-flex justify-content-center mb-4">
-                  <img
-                    className="text-center ms-5"
-                    alt="not fount"
-                    height={'150px'}
-                    src={URL.createObjectURL(image)}
-                  />
-                  <button
-                    className="btn btn-danger btn-sm ms-3 h-25 my-auto"
-                    onClick={() => setImage(null)}
-                  >
-                    <i className="far fa-trash-alt"></i>
-                  </button>
-                </div>
-              )}
-            </div>
+          <div className="col-md-10 col-lg-6 bg-light border border-2 py-4 px-1 mx-auto">
+            {image && (
+              <div className="d-flex px-3 flex-wrap">
+                <NewImage
+                  className="mx-auto rounded"
+                  alt="not fount"
+                  src={URL.createObjectURL(image)}
+                />
+                <DeleteBtn
+                  className="far fa-trash-alt btn btn-danger btn-sm"
+                  onClick={() => setImage(null)}
+                />
+              </div>
+            )}
             <div className="row">
               <div className="mb-3 col-11 mx-auto">
                 <textarea

@@ -86,7 +86,7 @@ class Home extends Component {
         {this.state.postArray.map((post) => (
           <div key={post.id}>
             <div className="container my-4 pt-2 pb-2">
-              <div className="col-md-10 col-lg-6 border border-2 shadow rounded mx-auto">
+              <div className="col-md-9 col-lg-6 border border-2 shadow rounded mx-auto">
                 <div className="row mx-auto mb-4">
                   <PostUser className="col-9 col-md-10 mt-3">
                     <UserPhoto
@@ -106,7 +106,7 @@ class Home extends Component {
                   </PostUser>
                   {(localStorage.getItem('userId') ===
                     post.User.id.toString() ||
-                    localStorage.getItem('userId') === 1) && (
+                    localStorage.getItem('userId') === '1') && (
                     <PostMenu className="dropdown col">
                       <button
                         className="btn btn-sm border border-2 mt-4 px-2 shadow-sm dropdown-toggle"
