@@ -1,5 +1,6 @@
 // Import
 import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import Moment from 'react-moment'
 import axios from 'axios'
@@ -18,13 +19,12 @@ const UserInfo = styled.p`
 
 function ModifyPost() {
   // Récupération du post
-  var searchParams = new URLSearchParams(window.location.search)
-  let postId = parseInt(searchParams.get('id'.value))
+  const { id } = useParams()
   const [post, setPost] = useState([])
   useEffect(() => {
     axios({
       method: 'get',
-      url: 'http://localhost:3000/api/posts/' + postId,
+      url: 'http://localhost:3000/api/posts/' + id,
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
@@ -39,65 +39,87 @@ function ModifyPost() {
         window.alert('Récupération des publications impossible')
       })
   }, [])
-  // // Modifier un post
-  // const [newPostMessage, setNewPostMessage] = useState([])
-  // const [newPostImage, setNewPostImage] = useState([])
-  // const updatePostClick = (e, id) => {
-  //   const formValues = {
-  //     message: newPostMessage,
-  //     image: newPostImage,
-  //   }
-  //   e.preventDefault()
-  //   axios({
-  //     method: 'put',
-  //     url: 'http://localhost:3000/api/posts/' + id,
-  //     data: formValues,
-  //     headers: {
-  //       Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
-  //       'Content-Type': 'application/json',
-  //     },
-  //   })
-  //     .then((res) => {
-  //       console.log(res)
-  //       window.location.reload()
-  //     })
-  //     .catch((err) => {
-  //       console.log(err)
-  //       window.alert('Modification du post impossible')
-  //     })
-  // }
+  // Modifier un post
+  const [newPostMessage, setNewPostMessage] = useState([])
+  const [newPostImage, setNewPostImage] = useState([])
+  const updatePostClick = (e, id) => {
+    const formValues = {
+      message: newPostMessage,
+      image: newPostImage,
+    }
+    e.preventDefault()
+    axios({
+      method: 'put',
+      url: 'http://localhost:3000/api/posts/' + id,
+      data: formValues,
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        console.log(res)
+        window.location.reload()
+      })
+      .catch((err) => {
+        console.log(err)
+        window.alert('Modification du post impossible')
+      })
+  }
   return (
     <>
-      <div id={post.id}>
-        <div className="container pt-2 pb-2">
+      <div key={post.id}>
+        <div className="container pt-4 pb-2">
           <div className="col-md-10 col-lg-8 border shadow-sm rounded mx-auto">
             <div className="row mx-auto mb-4">
-              <PostUser className="col-10 mt-3">
+              {/* <PostUser className="col-10 mt-3">
                 <UserPhoto
-                  // src={post.User.photo}
+                  src={post.User.photo}
                   className="img-fluid me-1"
                   alt="Photo de profile"
                 />
                 <div className="my-auto">
                   <UserInfo id="userName">
-                    {/* {post.User.firstName} {post.User.lastName} */}
+                    {post.User.firstName} {post.User.lastName}
                   </UserInfo>
                   <UserInfo className="text-secondary" id="date">
                     <Moment format="D MMM YYYY">{post.createdAt}</Moment>
                   </UserInfo>
                 </div>
-              </PostUser>
+              </PostUser> */}
             </div>
             <div className="row">
-              <div className="text-center col-11 mx-auto" id="postImage">
-                <img src={post.image} alt="Partagé par l'utilisateur" />
+              <div
+                className="text-center shadow-sm my-4 col-10 mx-auto"
+                id="postImage"
+              >
+                <img
+                  className="w-75"
+                  src={post.image}
+                  alt="Partagé par l'utilisateur"
+                />
               </div>
             </div>
             <div className="row">
-              <p id="postMessage" className="col-11 mx-auto">
-                {post.message}
-              </p>
-              <span className="border-bottom col-11 my-1 mx-auto"></span>
+              <div className="mb-3 col-10 p-0 mx-auto">
+                <textarea
+                  type="text"
+                  className="form-control border border-2"
+                  id="newMessage"
+                  placeholder={post.message}
+                  rows="3"
+                  value={newPostMessage}
+                  onChange={(e) => setNewPostMessage(e.target.value)}
+                ></textarea>
+              </div>
+            </div>
+            <div className="row">
+              <button
+                className="btn btn-light border border-2 mb-3 mt-2 col-6 mx-auto"
+                onClick={updatePostClick}
+              >
+                Enregistrer vos modifications
+              </button>
             </div>
           </div>
         </div>

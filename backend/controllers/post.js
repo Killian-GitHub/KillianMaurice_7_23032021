@@ -1,22 +1,10 @@
-// Imports >
+// Imports
 const models = require('../models')
 const fs = require('fs')
 
-// - - -  CREATE - - - //
+// CREATE
 exports.createPost = async (req, res) => {
   try {
-    // Vérification du contenu
-    const content = req.body.message
-    if (content == null || content == '') {
-      return res
-        .status(400)
-        .json({ error: "Votre publication n'a pas de contenu" })
-    }
-    if (content.length <= 3) {
-      return res.status(400).json({
-        error: 'Le contenu du message doit contenir au moins 3 caractères',
-      })
-    }
     // Paramètres de l'image
     let imageUrl = req.file
     if (imageUrl) {
@@ -46,12 +34,12 @@ exports.createPost = async (req, res) => {
   }
 }
 
-// - - - GET - - - //
+// GET
 exports.getAllPosts = async (req, res) => {
   try {
     // Recherche des post
     const posts = await models.Post.findAll({
-      order: [['createdAt', 'DESC']],
+      order: [['updatedAt', 'DESC']],
       include: [
         // Recherche des utilisateurs
         {
@@ -68,12 +56,14 @@ exports.getAllPosts = async (req, res) => {
   }
 }
 
-// - - - GET - - - //
+// GET
 exports.getOnePost = async (req, res) => {
   try {
     // Recherche des post
     const post = await models.Post.findOne({
-      where: { id: req.params.id },
+      where: {
+        id: req.params.id,
+      },
       include: [
         // Recherche des utilisateurs
         {
@@ -91,20 +81,28 @@ exports.getOnePost = async (req, res) => {
   }
 }
 
-// - - - UPDATE - - - //
+// UPDATE
 exports.updatePost = async (req, res) => {
   try {
-    const userId = req.body.decodedToken.userId
+    const userId = res.locals.decodedToken.userId
     const post = await models.Post.findOne({
       where: {
         id: req.params.id,
       },
     })
+    let imageUrl = req.file
+    if (imageUrl) {
+      imageUrl = `${req.protocol}://${req.get('host')}/images/${
+        req.file.filename
+      }`
+    } else {
+      imageUrl = post.image
+    }
     if (userId === post.userId || userId.admin === true) {
       await models.Post.update(
         {
           message: req.body.message ? req.body.message : post.message,
-          image: req.body.image ? req.body.image : user.image,
+          image: imageUrl,
         },
         {
           where: {
@@ -123,10 +121,11 @@ exports.updatePost = async (req, res) => {
     return res.status(500).send({ error: 'Erreur serveur' })
   }
 }
-// - - - DELETE - - - //
+
+// DELETE
 exports.deletePost = async (req, res) => {
   // Recherche de l'utilisateur
-  const userId = await req.body.decodedToken.userId
+  const userId = await res.locals.decodedToken.userId
   // Recherche du post
   const post = await models.Post.findOne({
     where: {
@@ -135,17 +134,34 @@ exports.deletePost = async (req, res) => {
   })
   // Condition de suppression du post (User ou Admin)
   if (userId === post.userId || userId.admin === true) {
-    models.Comment.destroy({
-      where: {
-        PostId: req.params.id,
-      },
-    })
-    models.Post.destroy({
-      where: {
-        id: req.params.id,
-      },
-    })
-    return res.status(200).json({ message: 'Post supprimé !' })
+    if (post.image) {
+      const filename = post.image.split('/images/')[1]
+      fs.unlink(`images/${filename}`, () => {
+        models.Comment.destroy({
+          where: {
+            PostId: req.params.id,
+          },
+        }),
+          models.Post.destroy({
+            where: {
+              id: req.params.id,
+            },
+          })
+      })
+      return res.status(200).json({ message: 'Post supprimé !' })
+    } else {
+      models.Comment.destroy({
+        where: {
+          PostId: req.params.id,
+        },
+      }),
+        models.Post.destroy({
+          where: {
+            id: req.params.id,
+          },
+        })
+      return res.status(200).json({ message: 'Post supprimé !' })
+    }
   } else {
     return res
       .status(400)

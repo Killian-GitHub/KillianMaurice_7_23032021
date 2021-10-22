@@ -11,12 +11,12 @@ const app = express()
 
 const corsOptions = {
   origin: '*',
-  credentials: true, //access-control-allow-credentials:true
+  credentials: true,
   optionSuccessStatus: 200,
 }
 
 // Plugin
-app.use(bodyParser.urlencoded({ extended: true })) // parse des objets inclus dans d'autres
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(helmet())
 app.use(cors(corsOptions))

@@ -1,11 +1,11 @@
 // Import
 const models = require('../models')
 
-// - - - CREATE - - - //
+// CREATE
 exports.addComment = async (req, res) => {
   try {
     // Recherche de l'utilisateur
-    const userId = req.body.decodedToken.userId
+    const userId = res.locals.decodedToken.userId
     await models.User.findOne({
       where: { id: userId },
     })
@@ -23,7 +23,7 @@ exports.addComment = async (req, res) => {
   }
 }
 
-// - - - GET - - - //
+// GET
 exports.getComment = async (req, res) => {
   try {
     // Recherche des commentaires
@@ -45,10 +45,10 @@ exports.getComment = async (req, res) => {
   }
 }
 
-// - - - DELETE - - - //
+// DELETE
 exports.deleteComment = async (req, res) => {
   // Recherche de l' utilisateur
-  const userId = await req.body.decodedToken.userId
+  const userId = await res.locals.decodedToken.userId
   // Recherche du commentaire
   const comment = await models.Comment.findOne({
     where: {

@@ -6,43 +6,42 @@ const postCtrl = require('../controllers/post')
 const commentCtrl = require('../controllers/comment')
 const multer = require('../middleware/multer-config')
 
-// Routes >
 exports.router = (function () {
   const apiRouter = express.Router()
 
-  // - - - USERS ROUTES - - - //
+  // USERS ROUTES
 
-  // signup >
+  // signup
   apiRouter.post('/users/signup/', userCtrl.signup)
-  // login >
+  // login
   apiRouter.post('/users/login/', userCtrl.login)
-  // getAccount >
+  // getAccount
   apiRouter.get('/users/account/', auth, userCtrl.getAccount)
-  // updateProfile >
+  // updateProfile
   apiRouter.put('/users/account/modify/', auth, multer, userCtrl.updateAccount)
-  // deleteAccount >
+  // deleteAccount
   apiRouter.delete('/users/account/delete/', auth, userCtrl.deleteAccount)
 
-  // - - - POSTS ROUTES - - - //
+  // POSTS ROUTES
 
-  // new post >
+  // new post
   apiRouter.post('/posts/', auth, multer, postCtrl.createPost)
-  // get all post >
+  // get all post
   apiRouter.get('/posts/', auth, postCtrl.getAllPosts)
-  // get one post >
+  // get one post
   apiRouter.get('/posts/:id', auth, postCtrl.getOnePost)
-  // update post >
+  // update post
   apiRouter.put('/posts/:id/', auth, multer, postCtrl.updatePost)
-  // delete post >
+  // delete post
   apiRouter.delete('/posts/:id/', auth, postCtrl.deletePost)
 
-  // - - - COMMENTS ROUTES - - - //
+  // COMMENTS ROUTES
 
-  // add comment >
+  // add comment
   apiRouter.post('/comments/:id', auth, commentCtrl.addComment)
-  // get comment >
+  // get comment
   apiRouter.get('/comments/', auth, commentCtrl.getComment)
-  // delete comment >
+  // delete comment
   apiRouter.delete('/comments/:id', auth, commentCtrl.deleteComment)
 
   return apiRouter

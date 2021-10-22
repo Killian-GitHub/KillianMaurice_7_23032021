@@ -8,7 +8,6 @@ module.exports = (req, res, next) => {
     if (req.body.userId && req.body.userId !== userId) {
       throw 'ID utilisateur invalide'
     } else {
-      req.body.decodedToken = decodedToken
       res.locals.decodedToken = decodedToken
       next()
     }

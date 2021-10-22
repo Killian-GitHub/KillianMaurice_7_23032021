@@ -72,7 +72,7 @@ class Home extends Component {
     return (
       <>
         {this.state.postArray.map((post) => (
-          <div id={post.id}>
+          <div key={post.id}>
             <div className="container pt-2 pb-2">
               <div className="col-md-10 col-lg-7 border border-2 shadow-sm rounded mx-auto">
                 <div className="row mx-auto mb-4">
@@ -113,7 +113,7 @@ class Home extends Component {
                             className="dropdown-item"
                             id={post.id}
                             onClick={() =>
-                              (window.location.href = '/modify/?id=' + post.id)
+                              (window.location.href = '/modify/' + post.id)
                             }
                           >
                             Modifier
@@ -134,19 +134,24 @@ class Home extends Component {
                     </PostMenu>
                   )}
                 </div>
-                {/* A REVOIR ------- */}
                 {post.image !== null && (
                   <div className="row">
-                    <div className="text-center col-11 mx-auto" id="postImage">
-                      <img src={post.image} alt="Partagé par l'utilisateur" />
+                    <div
+                      className="text-center shadow-sm mb-4 col-10 mx-auto"
+                      id="postImage"
+                    >
+                      <img
+                        className="w-75"
+                        src={post.image}
+                        alt="Partagé par l'utilisateur"
+                      />
                     </div>
                   </div>
                 )}
                 <div className="row">
-                  <p id="postMessage" className="col mx-auto text-center">
+                  <p id="postMessage" className="col mx-auto mb-1 text-center">
                     {post.message}
                   </p>
-                  {/* <span className="border-bottom col-11 my-1 mx-auto"></span> */}
                 </div>
                 <span className="border-bottom col-11 my-1 mx-auto"></span>
                 <Comment id={post.id} />

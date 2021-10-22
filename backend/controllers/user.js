@@ -1,9 +1,10 @@
-// Imports >
+// Imports
 const bcrypt = require('bcrypt')
 const models = require('../models')
 const jwt = require('jsonwebtoken')
+const fs = require('fs')
 
-// - - - SIGNUP - - - //
+// SIGNUP
 exports.signup = async (req, res) => {
   try {
     // Vérification email existant
@@ -14,7 +15,7 @@ exports.signup = async (req, res) => {
     if (user !== null) {
       return res.status(400).json({ error: 'Cet utilisateur existe déjà' })
     } else {
-      // Hashage et création de l'utilisateur
+      // Création de l'utilisateur
       const hash = await bcrypt.hash(req.body.password, 10)
       await models.User.create({
         firstName: req.body.firstName,
@@ -30,14 +31,13 @@ exports.signup = async (req, res) => {
   }
 }
 
-// - - - LOGIN - - - //
+// LOGIN
 exports.login = async (req, res) => {
   try {
     // Recherche du mail
     const user = await models.User.findOne({
       where: { email: req.body.email },
     })
-    // Utilisateur non trouvé
     if (!user) {
       return res
         .status(401)
@@ -53,7 +53,7 @@ exports.login = async (req, res) => {
           { userId: user.id },
           process.env.AUTH_TOKEN,
           {
-            expiresIn: '2H',
+            expiresIn: '12H',
           }
         )
         res.status(200).send({
@@ -68,10 +68,10 @@ exports.login = async (req, res) => {
   }
 }
 
-// - - - GET - - - //
+// GET
 exports.getAccount = async (req, res) => {
   try {
-    const userId = req.body.decodedToken.userId
+    const userId = res.locals.decodedToken.userId
     const user = await models.User.findOne({
       where: {
         id: userId,
@@ -83,17 +83,27 @@ exports.getAccount = async (req, res) => {
   }
 }
 
-// - - - UPDATE - - - //
+// UPDATE
 exports.updateAccount = async (req, res) => {
   try {
-    const userId = req.body.decodedToken.userId
+    const userId = res.locals.decodedToken.userId
     const user = await models.User.findOne({
       where: {
         id: userId,
       },
     })
+    // Paramètres de l'image
+    let imageUrl = req.file
+    if (imageUrl) {
+      imageUrl = `${req.protocol}://${req.get('host')}/images/${
+        req.file.filename
+      }`
+    } else {
+      imageUrl = user.photo
+    }
     await models.User.update(
       {
+        photo: imageUrl,
         firstName: req.body.firstName ? req.body.firstName : user.firstName,
         lastName: req.body.lastName ? req.body.lastName : user.lastName,
         email: req.body.email ? req.body.email : user.email,
@@ -111,19 +121,18 @@ exports.updateAccount = async (req, res) => {
   }
 }
 
-// - - - DELETE - - - //
+// DELETE
 exports.deleteAccount = async (req, res) => {
   // Recherche de l'utilisateur
-  const userId = req.body.decodedToken.userId
+  const userId = res.locals.decodedToken.userId
+  const user = await models.User.findOne({
+    where: {
+      id: userId,
+    },
+  })
   try {
-    const user = await models.User.findOne({
-      where: {
-        id: userId,
-      },
-    })
-    if (!user) {
-      return res.status(400).json({ error: error })
-    } else {
+    const filename = user.photo.split('/images/')[1]
+    fs.unlink(`images/${filename}`, () => {
       models.User.destroy({
         where: {
           id: userId,
@@ -139,8 +148,8 @@ exports.deleteAccount = async (req, res) => {
           userId: userId,
         },
       })
-      return res.status(200).json({ message: 'Ce compte a bien été supprimé' })
-    }
+    })
+    return res.status(200).json({ message: 'Ce compte a bien été supprimé' })
   } catch (error) {
     return res.status(500).send({ error: 'Erreur serveur' })
   }
