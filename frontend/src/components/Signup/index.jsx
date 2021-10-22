@@ -1,55 +1,96 @@
 // Import
 import React, { useState } from 'react'
 import axios from 'axios'
-import UserIcon from '../../assets/logo/user.png'
+import { Link } from 'react-router-dom'
+import UserIcon from '../../assets/logo/user-grey.png'
 import ConnectionLogo from '../../assets/logo/icon-above-font-small.png'
+import { validName, validEmail, validPassword } from '../../utils/Regex'
 import '../../styles/login.css'
 
 function Signup() {
-  // Initialisation du state
+  // Récupération des saisies
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  // Initialisation de bouton
+  // Validation des saisies
+  const [firstNameErr, setFirstNameErr] = useState(false)
+  const [lastNameErr, setLastNameErr] = useState(false)
+  const [emailErr, setEmailErr] = useState(false)
+  const [passwordErr, setPasswordErr] = useState(false)
+
+  function formValid() {
+    let isValid = true
+
+    if (!validName.test(firstName)) {
+      setFirstNameErr(true)
+      isValid = false
+    } else {
+      setFirstNameErr(false)
+    }
+    if (!validName.test(lastName)) {
+      setLastNameErr(true)
+      isValid = false
+    } else {
+      setLastNameErr(false)
+    }
+    if (!validEmail.test(email)) {
+      setEmailErr(true)
+      isValid = false
+    } else {
+      setEmailErr(false)
+    }
+    if (!validPassword.test(password)) {
+      setPasswordErr(true)
+      isValid = false
+    } else {
+      setPasswordErr(false)
+    }
+
+    return isValid
+  }
+
+  // Envoie de la requête
   const submitClick = (e) => {
     e.preventDefault()
-    // Récupération des saisie + photo par défaut
-    const formValues = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      password: password,
-      photo: UserIcon,
+
+    const isValid = formValid()
+
+    if (isValid) {
+      const formValues = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+        photo: UserIcon,
+      }
+
+      axios({
+        method: 'POST',
+        url: process.env.REACT_APP_API_URL + '/api/users/signup',
+        data: formValues,
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => {
+          window.alert(
+            'Votre compte a bien été créé, a présent veuillez vous connecter'
+          )
+          window.location.href = '/login'
+        })
+        .catch((err) => {
+          alert(
+            "Une érreur est survenue, veillez à bien remplir le formulaire d'inscription"
+          )
+        })
     }
-    // Requète API
-    axios({
-      method: 'POST',
-      url: 'http://localhost:3000/api/users/signup',
-      data: formValues,
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => {
-        console.log(res)
-        window.alert(
-          'Votre compte a bien été créé, a présent veuillez vous connecter'
-        )
-        window.location.href = '/login'
-      })
-      .catch((err) => {
-        console.log(err)
-        alert(
-          "Une érreur est survenue, veillez à bien remplir le formulaire d'inscription"
-        )
-      })
   }
-  // Injection du composant
+
   return (
-    <section className="container mb-5">
+    <section className="container mb-4">
       <div className="text-center">
         <img
           src={ConnectionLogo}
@@ -71,6 +112,12 @@ function Signup() {
             onChange={(e) => setFirstName(e.target.value)}
           />
         </div>
+        {firstNameErr && (
+          <p className="text-danger text-center">
+            Les chiffres et symboles ne sont pas autorisés, utilisez entre 3 et
+            20 caractères
+          </p>
+        )}
       </div>
       <div className="row ">
         <div className="mb-3 col-11 col-md-9 col-lg-6 text-center mx-auto">
@@ -86,6 +133,12 @@ function Signup() {
             onChange={(e) => setLastName(e.target.value)}
           />
         </div>
+        {lastNameErr && (
+          <p className="text-danger text-center">
+            Les chiffres et symboles ne sont pas autorisés, utilisez entre 3 et
+            20 caractères
+          </p>
+        )}
       </div>
       <div className="row">
         <div className="mb-3 col-11 col-md-9 col-lg-6 text-center mx-auto">
@@ -101,6 +154,11 @@ function Signup() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+        {emailErr && (
+          <p className="text-danger text-center">
+            Adresse email invalide, veuillez entré votre adresse email
+          </p>
+        )}
       </div>
       <div className="row">
         <div className="mb-3 col-11 col-md-9 col-lg-6 text-center mx-auto">
@@ -116,16 +174,30 @@ function Signup() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+        {passwordErr && (
+          <p className="text-danger text-center">
+            Mot de passe invalide, entrez huit caractères au minimum et au moins
+            un chiffre
+          </p>
+        )}
       </div>
       <div className="row">
         <button
           type="button"
           id="signupButton"
-          className="btn btn-success col-5 col-md-4 col-lg-3 mt-4 mx-auto"
+          className="btn btn-light border col-5 col-md-4 col-lg-3 mt-4 mx-auto"
           onClick={submitClick}
         >
           Inscription
         </button>
+      </div>
+      <div className="row">
+        <Link
+          to="/login"
+          className="btn btn-sm mx-auto mt-3 col-4 col-md-2 col-lg-1 border"
+        >
+          Retour
+        </Link>
       </div>
     </section>
   )

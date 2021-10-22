@@ -1,5 +1,6 @@
 // Import
 import React, { useState } from 'react'
+import { validMessage } from '../../utils/Regex'
 import styled from 'styled-components'
 import axios from 'axios'
 
@@ -10,33 +11,55 @@ const AddComment = styled.div`
   }
 `
 
-// Component
 function NewComment(props) {
   const [visible, setVisible] = useState(false)
-  // Nouveau commentaire
+
+  // Récupération de la saisie
   const [newComment, setNewComment] = useState('')
+
+  // Validation de la saisie
+  const [messageErr, setMessageErr] = useState(false)
+
+  function formValid() {
+    let isValid = true
+
+    if (!validMessage.test(newComment)) {
+      setMessageErr(true)
+      isValid = false
+    } else {
+      setMessageErr(false)
+    }
+
+    return isValid
+  }
+
+  // Envoie de la requête
   const submitClick = (e, id) => {
     e.preventDefault()
-    const formValues = {
-      message: newComment,
+
+    const isValid = formValid()
+
+    if (isValid) {
+      const formValues = {
+        message: newComment,
+      }
+
+      axios({
+        method: 'post',
+        url: process.env.REACT_APP_API_URL + '/api/comments/' + id,
+        data: formValues,
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => {
+          window.location.reload()
+        })
+        .catch((err) => {
+          window.alert('Publication du commentaire impossible')
+        })
     }
-    axios({
-      method: 'post',
-      url: 'http://localhost:3000/api/comments/' + id,
-      data: formValues,
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => {
-        console.log(res)
-        window.location.reload()
-      })
-      .catch((err) => {
-        console.log(err)
-        window.alert('Publication du commentaire impossible')
-      })
   }
 
   return (
@@ -64,6 +87,11 @@ function NewComment(props) {
               ></textarea>
             </div>
           </div>
+          {messageErr && (
+            <p className="text-danger text-center">
+              Entrez un message de 2 caractères au minimum
+            </p>
+          )}
           <div className="row">
             <button
               type="button"

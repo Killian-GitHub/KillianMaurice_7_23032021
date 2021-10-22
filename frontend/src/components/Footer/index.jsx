@@ -1,12 +1,5 @@
 // Import
-import styled from 'styled-components'
-
-//Style
-const StyledLink = styled.a`
-  &:hover {
-    cursor: pointer;
-  }
-`
+import { Link } from 'react-router-dom'
 
 // Component
 function Footer() {
@@ -17,22 +10,22 @@ function Footer() {
           <div className="col">
             <ul className="list-inline list-unstyled text-center pt-2">
               <li className="list-inline-item">
-                <StyledLink className="nav-link text-secondary">
+                <Link to="#" className="nav-link link-secondary">
                   A propos
-                </StyledLink>
+                </Link>
               </li>
               <li className="list-inline-item">
-                <StyledLink className="nav-link text-secondary">
+                <Link to="#" className="nav-link link-secondary">
                   Confidentialité
-                </StyledLink>
+                </Link>
               </li>
               <li className="list-inline-item">
-                <StyledLink
-                  className="nav-link  text-secondary"
-                  href="mailto:groupomania@contact.com"
+                <Link
+                  className="nav-link link-secondary"
+                  to="mailto:groupomania@contact.com"
                 >
                   Contact
-                </StyledLink>
+                </Link>
               </li>
             </ul>
           </div>

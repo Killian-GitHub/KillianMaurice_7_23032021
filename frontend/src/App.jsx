@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom'
 import jwtDecode from 'jwt-decode'
 
-// Components
+// Composants
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Login from './components/Login'
@@ -18,7 +18,9 @@ import Home from './components/Home'
 import Profile from './components/Profile'
 import ModifyPost from './components/ModifyPost'
 
-// Security
+// Securité
+require('dotenv').config()
+
 const userToken = () => {
   if (localStorage.getItem('accessToken')) {
     const decodedToken = jwtDecode(localStorage.getItem('accessToken'))
@@ -32,7 +34,7 @@ const userToken = () => {
   }
 }
 
-// Auth routes
+// Routes privées
 const PrivateRoutes = ({ component: Component, path }) => {
   return (
     <Route
@@ -43,7 +45,7 @@ const PrivateRoutes = ({ component: Component, path }) => {
   )
 }
 
-// Private routes
+// Eléments
 const dashboard = () => {
   return (
     <Context.Provider value={userToken}>
@@ -70,10 +72,10 @@ const modify = () => {
   )
 }
 
-// Context
+// Contexte
 const Context = createContext()
 
-// APP
+// App
 const App = () => {
   return (
     <Router>

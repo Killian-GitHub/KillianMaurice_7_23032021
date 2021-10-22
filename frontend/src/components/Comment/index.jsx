@@ -11,21 +11,23 @@ const UserInfo = styled.p`
   margin: 0;
 `
 const CommentUserPhoto = styled.img`
-  height: 55px;
-  padding: 2px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
 `
 const StyledButton = styled.div`
   cursor: pointer;
 `
 
-// Component
 function Comment(props) {
   // Récuperation des commentaires
   const [comments, setComments] = useState([])
+
   useEffect(() => {
     axios({
       method: 'get',
-      url: 'http://localhost:3000/api/comments/',
+      url: process.env.REACT_APP_API_URL + '/api/comments/',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
@@ -35,7 +37,6 @@ function Comment(props) {
         setComments(res.data.comments)
       })
       .catch((err) => {
-        console.log(err)
         window.alert('Récupération des commentaires impossible')
       })
   }, [])
@@ -43,9 +44,10 @@ function Comment(props) {
   // Supprimer un commentaire
   const deleteCommentClick = (e, id) => {
     e.preventDefault()
+
     axios({
       method: 'delete',
-      url: 'http://localhost:3000/api/comments/' + id,
+      url: process.env.REACT_APP_API_URL + '/api/comments/' + id,
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
@@ -56,7 +58,6 @@ function Comment(props) {
         window.location.reload()
       })
       .catch((err) => {
-        console.log(err)
         window.alert('Suppression du commentaire impossible')
       })
   }
@@ -64,7 +65,7 @@ function Comment(props) {
   return (
     <>
       {comments
-        .filter((comment) => comment.PostId === props.id) // Récupération du postId dans les props
+        .filter((comment) => comment.PostId === props.id)
         .map((comment, id) => {
           return (
             <div key={id}>
@@ -72,10 +73,10 @@ function Comment(props) {
                 <PostUser className="col-9 mt-3 ms-3">
                   <CommentUserPhoto
                     src={comment.User.photo}
-                    className="img-fluid me-2"
+                    className="me-2 shadow"
                     alt="Logo de groupomania"
                   />
-                  <div className="my-auto bg-light px-2 py-1">
+                  <div className="my-auto bg-light shadow-sm px-2 py-1">
                     <UserInfo className="font-weight-bold" id="userName">
                       {comment.User.firstName} {comment.User.lastName}
                     </UserInfo>
@@ -84,12 +85,12 @@ function Comment(props) {
                     </UserInfo>
                   </div>
                 </PostUser>
-                <div className="col-2 my-auto">
+                <div className="col-2 me-2 my-auto">
                   {(localStorage.getItem('userId') ===
                     comment.User.id.toString() ||
                     localStorage.getItem('userId') === 1) && (
                     <StyledButton
-                      className="far fa-trash-alt color-secondary p-2 border border-2 rounded bg-light shadow-sm"
+                      className="far fa-trash-alt color-secondary p-1 border border-2 rounded bg-light shadow-sm"
                       onClick={(e) => deleteCommentClick(e, comment.id)}
                     ></StyledButton>
                   )}

@@ -2,86 +2,106 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
+import { validMessage } from '../../utils/Regex'
 
 // Style
 const AddImage = styled.input`
   display: none;
 `
+const UserPhoto = styled.img`
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+`
 
-// Récuperation de la photo de profile
+// Récuperation de la photo de profil
 const userPhoto = localStorage.getItem('userPhoto')
 
-// Component
 function NewPost() {
   const [visible, setVisible] = useState(false)
-  const [message, setMessage] = useState('')
-  const [selectedImage, setSelectedImage] = useState(null)
 
-  // Initialisation de bouton
+  // Récupération des données
+  const [message, setMessage] = useState('')
+  const [image, setImage] = useState(null)
+
+  // Validation de la saisie
+  const [messageErr, setMessageErr] = useState(false)
+
+  function formValid() {
+    let isValid = true
+
+    if (!validMessage.test(message)) {
+      setMessageErr(true)
+      isValid = false
+    } else {
+      setMessageErr(false)
+    }
+
+    return isValid
+  }
+
+  // Envoie de la requête
   const submitClick = (e) => {
     e.preventDefault()
-    let formData = new FormData()
-    formData.append('image', selectedImage)
-    formData.append('message', message)
 
-    // Envoi a l'API
-    axios({
-      method: 'post',
-      url: 'http://localhost:3000/api/posts/',
-      // data: postValues,
-      data: formData,
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-      .then((res) => {
-        console.log(res)
-        window.location.reload()
+    const isValid = formValid()
+
+    if (isValid) {
+      let formData = new FormData()
+      formData.append('image', image)
+      formData.append('message', message)
+
+      axios({
+        method: 'post',
+        url: process.env.REACT_APP_API_URL + '/api/posts/',
+        data: formData,
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
+          'Content-Type': 'multipart/form-data',
+        },
       })
-      .catch((err) => {
-        console.log(err)
-        window.alert('Publication impossible')
-      })
+        .then((res) => {
+          window.location.reload()
+        })
+        .catch((err) => {
+          window.alert('Publication impossible')
+        })
+    }
   }
 
   return (
     <>
-      <div className="row mt-3">
-        <img
-          src={userPhoto}
-          className="col-4 col-md-2 col-lg-1 mt-2 mx-auto"
-          alt="Utilisateur"
-        />
+      <div className="d-flex justify-content-center mt-3">
+        <UserPhoto src={userPhoto} alt="Utilisateur" className="shadow-lg" />
       </div>
-      <div className="row">
+      <div className="d-flex justify-content-center">
         <button
           className="btn  my-3 col-8 col-md-5 col-lg-3 mx-auto py-2 shadow-sm border border-2"
           onClick={() => {
             !visible ? setVisible(true) : setVisible(false)
           }}
         >
-          Ajoutez une publication
+          Ajouter une publication
         </button>
       </div>
       {visible ? (
         <div className="container pt-2 pb-2">
-          <div className="col-md-10 col-lg-7 bg-light py-4 px-1 mx-auto">
+          <div className="col-md-10 col-lg-6 bg-light py-4 px-1 mx-auto">
             <div className="row">
-              {selectedImage && (
+              {image && (
                 <div className="d-flex justify-content-center mb-4">
                   <img
                     className="text-center ms-5"
                     alt="not fount"
-                    // width={'200px'}
                     height={'150px'}
-                    src={URL.createObjectURL(selectedImage)}
+                    src={URL.createObjectURL(image)}
                   />
                   <button
                     className="btn btn-danger btn-sm ms-3 h-25 my-auto"
-                    onClick={() => setSelectedImage(null)}
+                    onClick={() => setImage(null)}
                   >
-                    <i class="far fa-trash-alt"></i>
+                    <i className="far fa-trash-alt"></i>
                   </button>
                 </div>
               )}
@@ -92,20 +112,25 @@ function NewPost() {
                   type="text"
                   className="form-control border border-2"
                   id="newMessage"
-                  placeholder="Écrivez votre texte"
+                  placeholder="Écrivez votre texte ici"
                   rows="3"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 ></textarea>
               </div>
             </div>
+            {messageErr && (
+              <p className="text-danger text-center">
+                Entrez un message de 2 caractères au minimum
+              </p>
+            )}
             <div className="row mt-2 mx-auto d-flex justify-content-around">
               <label className="btn bg-white col-5 col-md-4 py-2 border border-2">
                 <AddImage
                   type="file"
                   name="myImage"
-                  onChange={(event) => {
-                    setSelectedImage(event.target.files[0])
+                  onChange={(e) => {
+                    setImage(e.target.files[0])
                   }}
                 />
                 Ajouter une image

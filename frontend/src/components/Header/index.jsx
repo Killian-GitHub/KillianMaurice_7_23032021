@@ -24,7 +24,6 @@ const NavLink = styled.div`
   }
 `
 
-// Component
 function Header() {
   return (
     <header>

@@ -1,3 +1,4 @@
+// Import
 import React, { Component } from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
@@ -5,9 +6,12 @@ import Moment from 'react-moment'
 import NewComment from '../NewComment'
 import Comment from '../Comment'
 
+// Style
 const UserPhoto = styled.img`
+  width: 70px;
   height: 70px;
-  padding: 5px;
+  border-radius: 50%;
+  object-fit: cover;
 `
 const PostUser = styled.div`
   display: flex;
@@ -19,30 +23,39 @@ const PostMenu = styled.div`
   width: 30px;
   height: 30px;
 `
+const PostImage = styled.img`
+  object-fit: cover;
+  width: 100%;
+  @media screen and (min-width: 300px) {
+    height: 250px;
+  }
+  @media screen and (min-width: 500px) {
+    height: 400px;
+  }
+`
 
 class Home extends Component {
   // Récupération des publications
   state = {
     postArray: [],
   }
+
   componentDidMount() {
-    // Récupération des posts
+    // Récupération des publications
     axios({
       method: 'get',
-      url: 'http://localhost:3000/api/posts/',
+      url: process.env.REACT_APP_API_URL + '/api/posts/',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
       },
     })
       .then((res) => {
-        console.log(res)
         this.setState({
           postArray: res.data,
         })
       })
       .catch((err) => {
-        console.log(err)
         window.alert('Récupération des publications impossible')
       })
   }
@@ -50,20 +63,19 @@ class Home extends Component {
   // Supprimer une publication
   handleClick = (e, id) => {
     e.preventDefault()
+
     axios({
       method: 'delete',
-      url: 'http://localhost:3000/api/posts/' + id,
+      url: process.env.REACT_APP_API_URL + '/api/posts/' + id,
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
       },
     })
       .then((res) => {
-        console.log(res)
         window.location.reload()
       })
       .catch((err) => {
-        console.log(err)
         window.alert('Suppression du post impossible')
       })
   }
@@ -73,21 +85,22 @@ class Home extends Component {
       <>
         {this.state.postArray.map((post) => (
           <div key={post.id}>
-            <div className="container pt-2 pb-2">
-              <div className="col-md-10 col-lg-7 border border-2 shadow-sm rounded mx-auto">
+            <div className="container my-4 pt-2 pb-2">
+              <div className="col-md-10 col-lg-6 border border-2 shadow rounded mx-auto">
                 <div className="row mx-auto mb-4">
                   <PostUser className="col-9 col-md-10 mt-3">
                     <UserPhoto
                       src={post.User.photo}
-                      className="img-fluid me-1"
-                      alt="Photo de profile"
+                      alt="Utilisateur"
+                      className="ms-1 ms-md-4 me-2 shadow"
                     />
+
                     <div className="my-auto">
                       <UserInfo id="userName">
                         {post.User.firstName} {post.User.lastName}
                       </UserInfo>
                       <UserInfo className="text-secondary" id="date">
-                        <Moment format="D MMM YYYY">{post.createdAt}</Moment>
+                        <Moment format="D MMM YYYY">{post.updatedAt}</Moment>
                       </UserInfo>
                     </div>
                   </PostUser>
@@ -96,7 +109,7 @@ class Home extends Component {
                     localStorage.getItem('userId') === 1) && (
                     <PostMenu className="dropdown col">
                       <button
-                        className="btn btn-sm btn-light border border-2 mt-4 px-2 shadow-sm dropdown-toggle"
+                        className="btn btn-sm border border-2 mt-4 px-2 shadow-sm dropdown-toggle"
                         type="button"
                         id="dropdownMenuButton1"
                         data-bs-toggle="dropdown"
@@ -137,11 +150,10 @@ class Home extends Component {
                 {post.image !== null && (
                   <div className="row">
                     <div
-                      className="text-center shadow-sm mb-4 col-10 mx-auto"
+                      className="text-center shadow-sm p-0 mb-4 col-10 mx-auto"
                       id="postImage"
                     >
-                      <img
-                        className="w-75"
+                      <PostImage
                         src={post.image}
                         alt="Partagé par l'utilisateur"
                       />
@@ -149,7 +161,10 @@ class Home extends Component {
                   </div>
                 )}
                 <div className="row">
-                  <p id="postMessage" className="col mx-auto mb-1 text-center">
+                  <p
+                    id="postMessage"
+                    className="col mx-auto mb-1 px-4 text-center"
+                  >
                     {post.message}
                   </p>
                 </div>

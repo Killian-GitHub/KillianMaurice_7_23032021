@@ -4,16 +4,11 @@ import axios from 'axios'
 import styled from 'styled-components'
 
 // Style
-const Picture = styled.img`
-  width: 130px;
-`
-const StyledText = styled.p`
-  text-align: center;
-  color: grey;
-  &:hover {
-    color: rgb(86, 95, 123);
-    cursor: pointer;
-  }
+const UserPhoto = styled.img`
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
 `
 const StyledInput = styled.input`
   width: 70%;
@@ -24,100 +19,138 @@ const StyledInput = styled.input`
   background-color: rgb(245, 245, 245);
   outline: none;
 `
+const AddImage = styled.input`
+  display: none;
+`
 
 function Profile() {
-  // Initialisation du state
+  // Récupération des saisies
+  const [newPhoto, setNewPhoto] = useState(null)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-  // Récupération du profile
+
+  // Récupération du profil
   const [profile, setProfile] = useState([])
   useEffect(() => {
     axios({
       method: 'get',
-      url: 'http://localhost:3000/api/users/account/',
+      url: process.env.REACT_APP_API_URL + '/api/users/account/',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
       },
     })
       .then((res) => {
-        console.log(res)
         setProfile(res.data)
+        localStorage.removeItem('userPhoto')
+        localStorage.setItem('userPhoto', res.data.photo)
       })
       .catch((err) => {
-        console.log(err)
         window.alert('Récupération du profile impossible')
       })
   }, [])
 
+  // Modification du profil
+  const modifyClick = (e) => {
+    e.preventDefault()
+
+    let formData = new FormData()
+    formData.append('image', newPhoto)
+    formData.append('firstName', firstName)
+    formData.append('lastName', lastName)
+    formData.append('email', email)
+
+    axios({
+      method: 'put',
+      url: process.env.REACT_APP_API_URL + '/api/users/account/modify/',
+      data: formData,
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+      .then((res) => {
+        window.alert('Modifications enregistré')
+        window.location.href = '/account/'
+      })
+      .catch((err) => {
+        window.alert('Modification du compte impossible')
+      })
+  }
+
   // Suppression du profile
   const deleteClick = (e) => {
     e.preventDefault()
+
     axios({
       method: 'delete',
-      url: 'http://localhost:3000/api/users/account/delete',
+      url: process.env.REACT_APP_API_URL + '/api/users/account/delete',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
         'Content-Type': 'application/json',
       },
     })
       .then((res) => {
-        console.log(res)
         localStorage.removeItem('accessToken')
         localStorage.removeItem('userPhoto')
         window.location.href = '/login'
       })
       .catch((err) => {
-        console.log(err)
         window.alert('Suppression du compte impossible')
-      })
-  }
-
-  // Modification du profile
-  const modifyClick = (e) => {
-    e.preventDefault()
-    const formValues = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-    }
-    axios({
-      method: 'put',
-      url: 'http://localhost:3000/api/users/account/modify/',
-      data: formValues,
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => {
-        console.log(res)
-        window.alert('Modifications enregistré')
-        window.location.href = '/account/'
-      })
-      .catch((err) => {
-        console.log(err)
-        window.alert('Modification du compte impossible')
       })
   }
 
   return (
     <div className="container">
-      <div className="border shadow-sm rounded col-10 col-lg-7 mx-auto mt-5">
-        <div className="row">
-          <Picture
-            src={profile.photo}
-            alt="Profile"
-            className="mx-auto mt-4 mb-2"
-          />
-        </div>
-        <StyledText>Modifier la photo de profile</StyledText>
+      <div className="border border-2 shadow rounded col-10 col-lg-7 mx-auto mt-5">
+        {!newPhoto && (
+          <div className="d-flex justify-content-center mt-4">
+            <UserPhoto
+              src={profile.photo}
+              alt="Utilisateur"
+              className="shadow"
+            />
+          </div>
+        )}
+        {newPhoto && (
+          <>
+            <div className="d-flex justify-content-center">
+              <UserPhoto
+                src={URL.createObjectURL(newPhoto)}
+                alt="Profile"
+                className="mx-auto mt-4 mb-1"
+              />
+            </div>
+            <div className="row">
+              <label
+                className="btn col-10 col-md-5 link-danger mx-auto"
+                onClick={() => setNewPhoto(null)}
+              >
+                Annuler la modification
+              </label>
+            </div>
+          </>
+        )}
+        {!newPhoto && (
+          <div className="row">
+            <label className="btn col-10 col-md-5 link-secondary mx-auto">
+              <AddImage
+                type="file"
+                name="myImage"
+                onChange={(event) => {
+                  setNewPhoto(event.target.files[0])
+                }}
+              />
+              Modifier la photo de profil
+            </label>
+          </div>
+        )}
         <div className="row mt-2 mb-3">
           <p className="text-center mb-2">Prénom :</p>
           <StyledInput
             type="text"
-            class="form-control"
+            className="form-control"
             placeholder={profile.firstName}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -127,7 +160,7 @@ function Profile() {
           <p className="text-center mb-2">Nom :</p>
           <StyledInput
             type="text"
-            class="form-control"
+            className="form-control"
             placeholder={profile.lastName}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -137,21 +170,28 @@ function Profile() {
           <p className="text-center mb-2">Adresse email :</p>
           <StyledInput
             type="text"
-            class="form-control"
+            className="form-control"
             placeholder={profile.email}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <StyledText onClick={(e) => modifyClick(e)}>
-          Valider vos modifications
-        </StyledText>
-        <StyledText
-          className="text-danger mb-3"
-          onClick={(e) => deleteClick(e)}
-        >
-          Supprimer votre compte
-        </StyledText>
+        <div className="row">
+          <p
+            className="btn link-secondary mb-1 col-10 col-md-5 mx-auto"
+            onClick={(e) => modifyClick(e)}
+          >
+            Valider vos modifications
+          </p>
+        </div>
+        <div className="row">
+          <p
+            className="btn link-danger col-10 col-md-5 mx-auto"
+            onClick={(e) => deleteClick(e)}
+          >
+            Supprimer votre compte
+          </p>
+        </div>
       </div>
     </div>
   )

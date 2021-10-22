@@ -1,13 +1,11 @@
-// - Import - //
+// Import
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
-
-// - utils - //
 import './styles/index.css'
 import './styles/fas-logo.css'
 
-// - render - //
+// Dom
 ReactDOM.render(
   <React.StrictMode>
     <App />
