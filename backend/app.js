@@ -1,7 +1,6 @@
 // Imports >
 const express = require('express')
 const helmet = require('helmet')
-const cors = require('cors')
 const bodyParser = require('body-parser')
 const path = require('path')
 const apiRouter = require('./routes/route').router
@@ -9,17 +8,10 @@ const apiRouter = require('./routes/route').router
 // App express
 const app = express()
 
-const corsOptions = {
-  origin: '*',
-  credentials: true,
-  optionSuccessStatus: 200,
-}
-
 // Plugin
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(helmet())
-app.use(cors(corsOptions))
 
 require('dotenv').config()
 
