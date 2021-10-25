@@ -133,7 +133,7 @@ exports.deletePost = async (req, res) => {
     },
   })
   // Condition de suppression du post (User ou Admin)
-  if (userId === post.userId || userId.admin === true) {
+  if (userId === post.userId || userId === 1) {
     if (post.image) {
       const filename = post.image.split('/images/')[1]
       fs.unlink(`images/${filename}`, () => {

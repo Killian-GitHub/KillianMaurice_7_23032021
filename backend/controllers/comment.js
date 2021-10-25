@@ -56,7 +56,7 @@ exports.deleteComment = async (req, res) => {
     },
   })
   // Condition de suppression (User ou Admin)
-  if (userId === comment.userId || userId.admin === true) {
+  if (userId === comment.userId || userId === 1) {
     models.Comment.destroy({
       where: {
         id: req.params.id,
